@@ -1,0 +1,17 @@
+{{template "base/head" .}}
+<div class="content">
+	<h2>Validation</h2>
+	<p>You will now receive an email at {{.email}} with a code.</p>
+	<form method="post">
+		<div>
+			<label for="code">Code:</label>
+			<input type="text" id="code" name="code" required="1">@hw.ac.uk
+		</div>
+		<br />
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<button type="submit" class="btn">Continue →</button>
+	</form>
+
+</div>
+{{template "base/footer" .}}
+

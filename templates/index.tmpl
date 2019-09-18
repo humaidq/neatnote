@@ -1,0 +1,11 @@
+{{template "base/head" .}}
+<div class="content">
+	<h2>Courses</h2>
+	<ul>
+		<a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
+		<div class="meta">
+			<p>{{.Count}} posts</p>
+		</div>
+	</ul>
+</div>
+{{template "base/footer" .}}

@@ -1,0 +1,21 @@
+{{template "base/head" .}}
+<div class="content">
+	<div class="alert alert-red">
+		<p class="alert-title">Notice: Only for Heriot-Watt University students<p>
+		<p>You need to use your University-provided email address to login
+			to this site, and you will recieve a code which will allow you to proceed.</p>
+	</div>
+	<h2>Login</h2>
+	<form method="post">
+		<div>
+			<label for="email">Email:</label>
+			<input type="text" id="email" name="email" required="1">@hw.ac.uk
+		</div>
+		<br />
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<button type="submit" class="btn">Continue →</button>
+	</form>
+
+</div>
+{{template "base/footer" .}}
+

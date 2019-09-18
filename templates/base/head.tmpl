@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="/css/normalize-8.0.1.min.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+        <title>{{if .Title}}{{ .Title }} - {{end}}{{.SiteTitle}}</title>
+        <link rel="icon" href="data:;base64," />
+	</head>
+	<body>
+		<div class="container">
+			<nav>
+				<ul>
+					<li><a href="/" class="nav-title">{{.SiteTitle}}</a></li>
+					<div class="nav-right">
+						{{if .LoggedIn}}<li><a href="/profile">Logged in as {{.Username}}{{if .User.IsAdmin}} (admin){{end}}</a></li>{{end}}
+						<li>{{if .LoggedIn}}<a href="/logout">Logout</a>{{else}}<a href="/login">Login</a>{{end}}</li>
+					</div>
+				</ul>
+			</nav>
+
