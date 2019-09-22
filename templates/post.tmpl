@@ -1,0 +1,30 @@
+{{template "base/head" .}}
+<div class="content">
+	<h2>{{.Post.Title}}</h2>
+	<p><small>Posted by {{.Poster}}</small></p>
+	<div class="post">{{.FormattedPost}}</div>
+
+	<h2>Comments</h2>
+	<form method="post">
+		<div>
+			 <textarea name="text" cols="30" rows="4" required="1"></textarea> 
+		</div>
+		<p>Comments can be formatted with HTML, Markdown, and $\LaTeX$ for Math.</p>
+		<br />
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<button type="submit" class="btn">Comment</button>
+	</form>
+</div>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+{{template "base/footer" .}}

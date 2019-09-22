@@ -1,11 +1,15 @@
 {{template "base/head" .}}
 <div class="content">
 	<h2>Courses</h2>
+	{{if .User.IsAdmin}}<a href="/admin/add_course" class="btn">Add course</a>{{end}}
 	<ul>
-		<a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
+		{{range .Courses}}
+		<li><a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
 		<div class="meta">
-			<p>{{.Count}} posts</p>
+			<p>0 posts</p>
 		</div>
+		</li>
+		{{end}}
 	</ul>
 </div>
 {{template "base/footer" .}}

@@ -55,6 +55,21 @@ func start(clx *cli.Context) (err error) {
 	m.Get("/verify", routes.VerifyHandler)
 	m.Post("/verify", routes.PostVerifyHandler)
 
+	m.Group("/admin", func() {
+		m.Get("/add_course", routes.AdminAddCourseHandler)
+		m.Post("/add_course", routes.AdminPostAddCourseHandler)
+	})
+
+	m.Group("/course/:course", func() {
+		m.Get("/", routes.CourseHandler)
+		m.Get("/post", routes.CreatePostHandler)
+		m.Post("/post", routes.PostCreatePostHandler)
+		m.Group("/:post", func() {
+			m.Get("/", routes.PostPageHandler)
+			m.Post("/", routes.PostCommentPostHandler)
+		})
+	})
+
 	log.Printf("Starting web server on port %s\n", settings.SitePort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", settings.SitePort), m))
 	return nil

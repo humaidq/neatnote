@@ -7,8 +7,12 @@ import (
 	"github.com/badoux/checkmail"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	macaron "gopkg.in/macaron.v1"
+	"html/template"
 	"math/rand"
+	"strings"
 )
 
 const (
@@ -37,6 +41,7 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 
 func HomepageHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
+	ctx.Data["Courses"] = models.GetCourses()
 	ctx.HTML(200, "index")
 }
 
@@ -44,6 +49,57 @@ func LogoutHandler(ctx *macaron.Context, sess session.Store) {
 	sess.Set("auth", LoggedOut)
 	//sess.Flush()
 	ctx.Redirect("/")
+}
+
+func AdminAddCourseHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		return // TODO some error handling
+	}
+
+	user, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		return
+	}
+
+	if !user.IsAdmin {
+		return
+	}
+
+	ctx.HTML(200, "admin/add-course")
+}
+
+func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		return // TODO some error handling
+	}
+
+	user, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		return
+	}
+
+	if !user.IsAdmin {
+		return
+	}
+
+	courseCode := ctx.Query("coursecode")
+	courseName := ctx.Query("coursename")
+
+	// Check if course exists already
+	if _, err1 := models.GetCourse(courseCode); err1 == nil {
+		return
+	}
+
+	models.AddCourse(&models.Course{
+		Code:    courseCode,
+		Name:    courseName,
+		Visible: true,
+		Locked:  false,
+	})
+
+	ctx.Redirect("/?add=1")
 }
 
 func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
@@ -122,4 +178,81 @@ func PostVerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 		})
 	}
 	ctx.Redirect("/")
+}
+
+func CourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+
+	course, err := models.GetCourse(ctx.Params("course"))
+	if err != nil {
+		ctx.Redirect("/")
+		return // TODO proper error
+	}
+
+	course.LoadPosts()
+
+	ctx.Data["Course"] = course
+
+	ctx.HTML(200, "course")
+}
+
+func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+
+	course, err := models.GetCourse(ctx.Params("course"))
+	if err != nil {
+		ctx.Redirect("/")
+		return // TODO proper error
+	}
+
+	ctx.Data["Course"] = course
+
+	var post *models.Post
+	post, err = models.GetPost(ctx.Params("post"))
+	ctx.Data["Post"] = post
+
+	ctx.Data["Poster"] = strings.Split(post.Poster, "@")[0]
+
+	unsafe := blackfriday.Run([]byte(post.Text))
+	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+
+	ctx.Data["FormattedPost"] = template.HTML(html)
+
+	ctx.HTML(200, "post")
+}
+
+func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+
+}
+func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		ctx.Redirect("/login")
+		return
+	}
+	// check if course exists TODO
+
+	ctx.HTML(200, "create-post")
+}
+func PostCreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		ctx.Redirect("/login")
+		return
+	}
+	// check if course exists TODO
+
+	// TODO error handling
+	err := models.AddPost(&models.Post{
+		CourseCode: ctx.Params("course"),
+		Poster:     sess.Get("user").(string),
+		Locked:     false,
+		Title:      ctx.Query("title"),
+		Text:       ctx.Query("text"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
 }
