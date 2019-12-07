@@ -6,6 +6,7 @@ import (
 	"git.sr.ht/~humaid/notes-overflow/modules/settings"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq" // PostgreSQL driver support
+	"html/template"
 	"log"
 	"xorm.io/core"
 )
@@ -36,6 +37,7 @@ type Course struct {
 	Name        string `xorm:"notnull text"`
 	Visible     bool   `xorm:"notnull"`
 	Locked      bool   `xorm:"notnull"`
+	PostsCount  int64  `xorm:"-"`
 	Posts       []Post `xorm:"-"`
 	CreatedUnix int64  `xorm:"created"`
 	UpdatedUnix int64  `xorm:"updated"`
@@ -54,16 +56,22 @@ type Post struct {
 }
 
 type Comment struct {
-	CommentID   int64  `xorm:"pk autoincr"`
-	PostID      int64  `xorm:"notnull"`
-	Poster      string `xorm:"notnull"`
-	Text        string `xorm:"notnull"`
-	CreatedUnix int64  `xorm:"created"`
-	UpdatedUnix int64  `xorm:"updated"`
+	CommentID     int64         `xorm:"pk autoincr"`
+	PostID        int64         `xorm:"notnull"`
+	Poster        string        `xorm:"notnull"`
+	Text          string        `xorm:"notnull"`
+	FormattedText template.HTML `xorm:"-"`
+	CreatedUnix   int64         `xorm:"created"`
+	UpdatedUnix   int64         `xorm:"updated"`
 }
 
 func (c *Course) LoadPosts() (err error) {
 	return engine.Where("course_code = ?", c.Code).Find(&c.Posts)
+}
+
+func (c *Course) LoadPostsCount() (err error) {
+	c.PostsCount, err = engine.Where("course_code = ?", c.Code).Count(new(Post))
+	return
 }
 
 func GetCourse(code string) (*Course, error) {
@@ -75,6 +83,10 @@ func GetCourse(code string) (*Course, error) {
 		return c, errors.New("Course does not exist")
 	}
 	return c, nil
+}
+
+func (p *Post) LoadComments() (err error) {
+	return engine.Where("post_id = ?", p.PostID).Find(&p.Comments)
 }
 
 func GetPost(id string) (*Post, error) {
@@ -103,6 +115,11 @@ func AddCourse(c *Course) (err error) {
 }
 func AddUser(u *User) (err error) {
 	_, err = engine.Insert(u)
+	return err
+}
+
+func AddComment(c *Comment) (err error) {
+	_, err = engine.Insert(c)
 	return err
 }
 
