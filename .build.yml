@@ -1,0 +1,19 @@
+image: archlinux
+packages:
+  - go
+sources:
+  - https://git.sr.ht/~humaid/notes-overflow
+tasks:
+  - setup: |
+      cd notes-overflow
+      go get ./...
+  - format: |
+      cd notes-overflow
+      go fmt $(go list ./... | grep -v /vendor/)
+      go vet $(go list ./... | grep -v /vendor/)
+  - test: |
+      cd notes-overflow
+      go test -cover -race $(go list ./... | grep -v /vendor/)
+  - build: |
+      cd notes-overflow
+      go build
