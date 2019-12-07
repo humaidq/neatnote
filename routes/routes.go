@@ -45,6 +45,14 @@ func HomepageHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.HTML(200, "index")
 }
 
+func QnAHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	ctx.HTML(200, "qna")
+}
+func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	ctx.HTML(200, "guidelines")
+}
 func LogoutHandler(ctx *macaron.Context, sess session.Store) {
 	sess.Set("auth", LoggedOut)
 	//sess.Flush()
