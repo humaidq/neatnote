@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	SitePort      string
-	EmailAddress  string
-	EmailPassword string
-	DBConfig      DatabaseConfiguration
+	SitePort        string
+	EmailAddress    string
+	EmailPassword   string
+	EmailSMTPServer string
+	DBConfig        DatabaseConfiguration
 )
 
 type DatabaseConfiguration struct {
@@ -27,6 +28,7 @@ func LoadConfig() {
 	SitePort = os.Getenv("port")
 	EmailAddress = os.Getenv("email_address")
 	EmailPassword = os.Getenv("email_password")
+	EmailSMTPServer = os.Getenv("email_smtp_server")
 
 	DBConfig = DatabaseConfiguration{
 		Host:     os.Getenv("db_host"),

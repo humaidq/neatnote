@@ -14,8 +14,8 @@ func EmailCode(to string, code string) (err error) {
 		"Ignore this message if you have not requested a login.\n\n" +
 		"- Notes Overflow\nThis message is sent from an unmonitored inbox."
 
-	err = smtp.SendMail("smtp.gmail.com:587",
-		smtp.PlainAuth("", from, settings.EmailPassword, "smtp.gmail.com"),
+	err = smtp.SendMail(settings.EmailSMTPServer,
+		smtp.PlainAuth("", from, settings.EmailPassword, "smtp.migadu.com"),
 		from, []string{to}, []byte(message))
 
 	return err
