@@ -1,4 +1,5 @@
 /* Page style */
+@import url('https://fonts.googleapis.com/css?family=Merriweather&display=swap');
 body {
   font-family: Roboto, sans-serif;
   font-size: 1em;
@@ -24,6 +25,16 @@ p {
   padding: 20px 30px;
 }
 
+.post {
+  padding: 0 10%;
+}
+
+.post p {
+	line-height: 25px;
+	font-family: 'Merriweather', serif;
+	font-size: 18px;
+}
+
 .footer {
   font-size: 0.8rem;
   padding: 8px;
@@ -34,9 +45,17 @@ a {
   color: inherit;
 }
 
-a:focus {
+a:focus, button:focus {
   background-color: #ffbf47;
   outline: 2.5pt solid #ffbf47;
+}
+
+.btn:focus {
+  font-weight: bold;
+}
+
+code {
+  white-space: pre;
 }
 
 /* Typography */
@@ -73,8 +92,9 @@ a:focus {
   text-decoration: none;
 }
 
-.btn:focus, input:focus {
+.btn:focus, input:focus, textarea:focus {
   outline: 2.5pt solid #ffbf47;
+  color: black;
 }
 
 textarea, input {

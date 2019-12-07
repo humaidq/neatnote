@@ -12,6 +12,7 @@ import (
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
 	"math/rand"
+	"strconv"
 	"strings"
 )
 
@@ -41,7 +42,11 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 
 func HomepageHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
-	ctx.Data["Courses"] = models.GetCourses()
+	courses := models.GetCourses()
+	for i := range courses {
+		courses[i].LoadPostsCount()
+	}
+	ctx.Data["Courses"] = courses
 	ctx.HTML(200, "index")
 }
 
@@ -144,6 +149,7 @@ func PostLoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	err = mailer.EmailCode(to, code)
 	if err != nil {
 		ctx.PlainText(200, []byte("Failed to email, go back and check email."))
+		fmt.Println(err)
 		return
 	}
 	sess.Set("auth", Verification)
@@ -217,21 +223,52 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 
 	var post *models.Post
 	post, err = models.GetPost(ctx.Params("post"))
+	post.LoadComments()
 	ctx.Data["Post"] = post
 
 	ctx.Data["Poster"] = strings.Split(post.Poster, "@")[0]
 
-	unsafe := blackfriday.Run([]byte(post.Text))
-	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
 
-	ctx.Data["FormattedPost"] = template.HTML(html)
+	for i := range post.Comments {
+		post.Comments[i].FormattedText =
+			template.HTML(markdownToHTML(post.Comments[i].Text))
+	}
 
 	ctx.HTML(200, "post")
 }
 
-func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
-
+func markdownToHTML(s string) string {
+	unsafe := blackfriday.Run([]byte(s),
+		blackfriday.WithExtensions(blackfriday.HardLineBreak))
+	return string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 }
+
+func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		ctx.Redirect("/login")
+		return
+	}
+
+	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
+
+	// TODO check if post/course exists
+
+	err := models.AddComment(&models.Comment{
+		Poster: sess.Get("user").(string),
+		PostID: postID,
+		Text:   ctx.Query("text"),
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Params("post")))
+}
+
 func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {

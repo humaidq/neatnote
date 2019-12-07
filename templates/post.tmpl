@@ -5,6 +5,11 @@
 	<div class="post">{{.FormattedPost}}</div>
 
 	<h2>Comments</h2>
+	{{range .Post.Comments}}
+	<p><small>Comment by {{.Poster}}{{if or (eq .Poster $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}</small></p>
+	<div class="post">{{.FormattedText}}</div>
+	{{end}}
+
 	<form method="post">
 		<div>
 			 <textarea name="text" cols="30" rows="4" required="1"></textarea> 
@@ -15,16 +20,4 @@
 		<button type="submit" class="btn">Comment</button>
 	</form>
 </div>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 {{template "base/footer" .}}
