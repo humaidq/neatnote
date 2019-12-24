@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"git.sr.ht/~humaid/notes-overflow/modules/settings"
+	_ "github.com/go-sql-driver/mysql" // MySQL driver support
 	"github.com/go-xorm/xorm"
-	_ "github.com/lib/pq" // PostgreSQL driver support
 	"html/template"
 	"log"
 	"xorm.io/core"
@@ -33,7 +33,7 @@ type User struct {
 }
 
 type Course struct {
-	Code        string `xorm:"pk text"`
+	Code        string `xorm:"pk varchar(64)"`
 	Name        string `xorm:"notnull text"`
 	Visible     bool   `xorm:"notnull"`
 	Locked      bool   `xorm:"notnull"`
@@ -145,9 +145,9 @@ func SetupEngine() *xorm.Engine {
 	var err error
 	dbConf := &settings.DBConfig
 
-	address := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s",
-		dbConf.User, dbConf.Password, dbConf.Host, dbConf.Name, dbConf.SSLMode)
-	engine, err = xorm.NewEngine("postgres", address)
+	address := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
+		dbConf.User, dbConf.Password, dbConf.Host, dbConf.Name)
+	engine, err = xorm.NewEngine("mysql", address)
 
 	if err != nil {
 		log.Fatal("Unable to connect/load the database! ", err)

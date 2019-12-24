@@ -9,7 +9,7 @@ import (
 	"github.com/go-macaron/captcha"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
-	_ "github.com/go-macaron/session/postgres"
+	_ "github.com/go-macaron/session/mysql"
 	"github.com/urfave/cli"
 	macaron "gopkg.in/macaron.v1"
 	"log"
@@ -35,12 +35,12 @@ func start(clx *cli.Context) (err error) {
 
 	m.Use(macaron.Renderer())
 	m.Use(cache.Cacher())
-	psqlConfig := fmt.Sprintf("user=%s password=%s host=%s port=5432 dbname=%s sslmode=disable",
-		settings.DBConfig.User, settings.DBConfig.Password, settings.DBConfig.Host, "session")
-	fmt.Println(psqlConfig)
+	sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
+		settings.DBConfig.User, settings.DBConfig.Password, settings.DBConfig.Host, settings.DBConfig.Name)
+	fmt.Println(sqlConfig)
 	m.Use(session.Sessioner(session.Options{
-		Provider:       "postgres",
-		ProviderConfig: psqlConfig,
+		Provider:       "mysql",
+		ProviderConfig: sqlConfig,
 	}))
 	m.Use(csrf.Csrfer())
 	m.Use(captcha.Captchaer())
