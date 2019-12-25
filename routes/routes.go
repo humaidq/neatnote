@@ -171,12 +171,12 @@ func PostLoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 		return
 	}
 
-	err = mailer.EmailCode(to, code)
-	if err != nil {
+	go mailer.EmailCode(to, code)
+	/*if err != nil {
 		ctx.PlainText(200, []byte("Failed to email, go back and check email."))
 		fmt.Println(err)
 		return
-	}
+	}*/
 	sess.Set("auth", Verification)
 	sess.Set("code", code)
 	sess.Set("user", to)
@@ -315,16 +315,17 @@ func PostCreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store
 	// check if course exists TODO
 
 	// TODO error handling
-	err := models.AddPost(&models.Post{
+	post := &models.Post{
 		CourseCode: ctx.Params("course"),
 		PosterID:     sess.Get("user").(string),
 		Locked:     false,
 		Title:      ctx.Query("title"),
 		Text:       ctx.Query("text"),
-	})
+	}
+	err := models.AddPost(post)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+	ctx.Redirect(fmt.Sprintf("/course/%s/%d", ctx.Params("course"), post.PostID))
 }

@@ -1,10 +1,9 @@
 {{template "base/head" .}}
 <div class="content">
-	{{if not .User.FullName}}<div class="alert alert-red">
+	{{if and .LoggedIn (not .User.FullName)}}<div class="alert alert-red">
 	<p class="alert-title">Setup your profile</p>
 	<p>Please set your display name in your <a href="/profile">profile
-	settings</a>.</p>{{end}}
-	</div>
+	settings</a>.</p></div>{{end}}
 	<h2>Courses</h2>
 	{{if .User.IsAdmin}}<a href="/admin/add_course" class="btn">Add course</a>{{end}}
 	<ul>
