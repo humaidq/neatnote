@@ -58,6 +58,31 @@ func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	ctx.HTML(200, "guidelines")
 }
+
+func ProfileHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	ctx.HTML(200, "profile")
+}
+
+func PostProfileHandler(ctx *macaron.Context, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		ctx.Redirect("/login")
+		return // TODO some error handling
+	}
+
+	// TODO validate fullname
+	err := models.UpdateUser(&models.User{
+		Username: sess.Get("user").(string),
+		FullName: ctx.Query("fullname"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.Redirect("/profile")
+}
+
 func LogoutHandler(ctx *macaron.Context, sess session.Store) {
 	sess.Set("auth", LoggedOut)
 	//sess.Flush()
@@ -226,11 +251,13 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	post.LoadComments()
 	ctx.Data["Post"] = post
 
-	ctx.Data["Poster"] = strings.Split(post.Poster, "@")[0]
+	ctx.Data["PosterID"] = strings.Split(post.PosterID, "@")[0]
 
 	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
 
 	for i := range post.Comments {
+		post.Comments[i].LoadCreated()
+		post.Comments[i].LoadPoster()
 		post.Comments[i].FormattedText =
 			template.HTML(markdownToHTML(post.Comments[i].Text))
 	}
@@ -256,7 +283,7 @@ func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 	// TODO check if post/course exists
 
 	err := models.AddComment(&models.Comment{
-		Poster: sess.Get("user").(string),
+		PosterID: sess.Get("user").(string),
 		PostID: postID,
 		Text:   ctx.Query("text"),
 	})
@@ -290,7 +317,7 @@ func PostCreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store
 	// TODO error handling
 	err := models.AddPost(&models.Post{
 		CourseCode: ctx.Params("course"),
-		Poster:     sess.Get("user").(string),
+		PosterID:     sess.Get("user").(string),
 		Locked:     false,
 		Title:      ctx.Query("title"),
 		Text:       ctx.Query("text"),

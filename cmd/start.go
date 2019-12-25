@@ -47,6 +47,8 @@ func start(clx *cli.Context) (err error) {
 
 	// Web routes
 	m.Get("/", routes.HomepageHandler)
+	m.Get("/profile", routes.ProfileHandler)
+	m.Post("/profile", routes.PostProfileHandler)
 	m.Get("/qna", routes.QnAHandler)
 	m.Get("/guidelines", routes.GuidelinesHandler)
 

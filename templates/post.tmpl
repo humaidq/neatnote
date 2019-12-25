@@ -1,13 +1,16 @@
 {{template "base/head" .}}
 <div class="content">
 	<h2>{{.Post.Title}}</h2>
-	<p><small>Posted by {{.Poster}}</small></p>
+	<p><small class="sgrey">Posted by {{if .Post.Poster.FullName}}{{.Post.Poster.FullName}}{{else}}{{.Post.Poster.Username}}{{end}}
+	{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 
 	<h2>Comments</h2>
 	{{range .Post.Comments}}
-	<p><small>Comment by {{.Poster}}{{if or (eq .Poster $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}</small></p>
-	<div class="post">{{.FormattedText}}</div>
+	<p><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
+	{{.Created}} ago
+	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
+	<div>{{.FormattedText}}</div>
 	{{end}}
 
 	<form method="post">

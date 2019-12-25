@@ -6,8 +6,10 @@ import (
 	"git.sr.ht/~humaid/notes-overflow/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
 	"github.com/go-xorm/xorm"
+	"github.com/hako/durafmt"
 	"html/template"
 	"log"
+	"time"
 	"xorm.io/core"
 )
 
@@ -29,6 +31,8 @@ type User struct {
 	Username    string `xorm:"pk"`
 	FullName    string `xorm:"text null"`
 	IsAdmin     bool   `xorm:"bool"`
+	Iota        int64
+	Created     string `xorm:"-"`
 	CreatedUnix int64  `xorm:"created"`
 }
 
@@ -40,33 +44,74 @@ type Course struct {
 	PostsCount  int64  `xorm:"-"`
 	Posts       []Post `xorm:"-"`
 	CreatedUnix int64  `xorm:"created"`
+	Created     string `xorm:"-"`
 	UpdatedUnix int64  `xorm:"updated"`
 }
 
 type Post struct {
-	PostID      int64     `xorm:"pk autoincr"`
-	CourseCode  string    `xorm:"text notnull"`
-	Poster      string    `xorm:"notnull"`
-	Locked      bool      `xorm:"notnull"` // Whether the comments are locked.
-	Comments    []Comment `xorm:"-"`
-	Title       string    `xorm:"text notnull"`
-	Text        string    `xorm:"text notnull"`
-	CreatedUnix int64     `xorm:"created"`
-	UpdatedUnix int64     `xorm:"updated"`
+	PostID        int64     `xorm:"pk autoincr"`
+	CourseCode    string    `xorm:"text notnull"`
+	PosterID      string    `xorm:"notnull"`
+	Poster        *User     `xorm:"-"`
+	Locked        bool      `xorm:"notnull"` // Whether the comments are locked.
+	Comments      []Comment `xorm:"-"`
+	CommentsCount int64     `xorm:"-"`
+	Title         string    `xorm:"text notnull"`
+	Text          string    `xorm:"text notnull"`
+	CreatedUnix   int64     `xorm:"created"`
+	Created       string    `xorm:"-"`
+	UpdatedUnix   int64     `xorm:"updated"`
 }
 
 type Comment struct {
 	CommentID     int64         `xorm:"pk autoincr"`
 	PostID        int64         `xorm:"notnull"`
-	Poster        string        `xorm:"notnull"`
+	PosterID      string        `xorm:"notnull"`
+	Poster        *User         `xorm:"-"`
 	Text          string        `xorm:"notnull"`
 	FormattedText template.HTML `xorm:"-"`
 	CreatedUnix   int64         `xorm:"created"`
+	Created       string        `xorm:"-"`
 	UpdatedUnix   int64         `xorm:"updated"`
 }
 
+func UpdateUser(u *User) (err error) {
+	_, err = engine.Update(u)
+	return
+}
+
+func (c *Comment) LoadPoster() (err error) {
+	if c == nil {
+		return nil
+	} else if c.Poster != nil {
+		return nil
+	}
+
+	c.Poster, err = GetUser(c.PosterID)
+	return
+}
+
+func (c *Comment) LoadCreated() (err error) {
+	if c == nil {
+		return nil
+	}
+
+	dur := time.Now().Sub(time.Unix(c.CreatedUnix, 0))
+	c.Created = durafmt.Parse(dur).LimitFirstN(1).String()
+	return
+}
+
 func (c *Course) LoadPosts() (err error) {
-	return engine.Where("course_code = ?", c.Code).Find(&c.Posts)
+	err = engine.Where("course_code = ?", c.Code).Find(&c.Posts)
+	if err != nil {
+		return
+	}
+	for i := range c.Posts {
+		c.Posts[i].Poster, _ = GetUser(c.Posts[i].PosterID)
+		c.Posts[i].Created = calcDuration(c.Posts[i].CreatedUnix)
+		c.Posts[i].CommentsCount, _ = engine.Where("post_id = ?", c.Posts[i].PostID).Count(new(Comment))
+	}
+	return
 }
 
 func (c *Course) LoadPostsCount() (err error) {
@@ -82,7 +127,12 @@ func GetCourse(code string) (*Course, error) {
 	} else if !has {
 		return c, errors.New("Course does not exist")
 	}
+	c.Created = calcDuration(c.CreatedUnix)
 	return c, nil
+}
+
+func calcDuration(unix int64) string {
+	return durafmt.Parse(time.Now().Sub(time.Unix(unix, 0))).LimitFirstN(1).String()
 }
 
 func (p *Post) LoadComments() (err error) {
@@ -97,6 +147,8 @@ func GetPost(id string) (*Post, error) {
 	} else if !has {
 		return p, errors.New("Post does not exist")
 	}
+	p.Created = calcDuration(p.CreatedUnix)
+	p.Poster, _ = GetUser(p.PosterID)
 	return p, nil
 }
 
@@ -136,6 +188,7 @@ func GetUser(user string) (*User, error) {
 	} else if !has {
 		return u, errors.New("User does not exist")
 	}
+	u.Created = calcDuration(u.CreatedUnix)
 	return u, nil
 }
 

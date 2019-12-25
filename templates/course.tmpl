@@ -6,7 +6,8 @@
 		{{range .Course.Posts}}
 		<li><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
 		<div class="meta">
-			<p>0 comments</p>
+			<p>0&iota; by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}
+			{{.Created}} ago | {{.CommentsCount}} comments</p>
 		</div>
 		</li>
 		{{end}}

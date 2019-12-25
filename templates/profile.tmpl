@@ -1,0 +1,32 @@
+{{template "base/head" .}}
+<div class="content">
+	<h2>Profile</h2>
+	<form method="post">
+	<table border=0>
+	<tbody>
+	<tr>
+	<td>User:</td>
+	<td>{{.User.Username}}</td>
+	</tr>
+	<tr>
+	<td>Created:</td>
+	<td>{{.User.Created}} ago</td>
+	</tr>
+	<tr>
+	<td>Display Name:</td>
+	<td><input type="text" id="fullname" name="fullname"
+	value="{{.User.FullName}}"></td>
+	</tr>
+	<tr>
+	<td>Score (iota):</td>
+	<td>{{.User.Iota}}&iota;</td>
+	</tr>
+	</tbody>
+	</table>
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<button type="submit" class="btn">Update</button>
+	</form>
+
+</div>
+{{template "base/footer" .}}
+

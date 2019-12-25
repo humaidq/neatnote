@@ -28,8 +28,7 @@
 					<li><a href="/" class="nav-title">{{.SiteTitle}}</a></li>
 					<div class="nav-right">
 						{{if .LoggedIn}}<li>
-						<a href="/profile">Logged in as
-						{{.Username}}{{if .User.IsAdmin}} (admin){{end}}</a>
+						<a href="/profile">Logged in as {{if .User.FullName}}{{.User.FullName}}{{else}}{{.Username}}{{end}}{{if .User.IsAdmin}} (admin){{end}}</a>
 						</li>{{end}}
 						<li>
 						{{if .LoggedIn}}<a href="/logout">Logout</a>{{else}}
