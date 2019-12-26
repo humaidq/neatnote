@@ -7,12 +7,6 @@
 	<div class="post">{{.FormattedPost}}</div>
 
 	<h2>Comments</h2>
-	{{range .Post.Comments}}
-	<p><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
-	{{.Created}} ago
-	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
-	<div class="comment">{{.FormattedText}}</div>
-	{{end}}
 
 	<form method="post">
 		<div>
@@ -23,5 +17,11 @@
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Comment</button>
 	</form>
+	{{range .Post.Comments}}
+	<p><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
+	{{.Created}} ago
+	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
+	<div class="comment">{{.FormattedText}}</div>
+	{{end}}
 </div>
 {{template "base/footer" .}}
