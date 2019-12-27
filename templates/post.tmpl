@@ -13,10 +13,10 @@
 			 <textarea name="text" cols="30" rows="4" required="1"></textarea> 
 		</div>
 		<p>Comments can be formatted with HTML, Markdown, and $\LaTeX$ for Math.</p>
-		<br />
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Comment</button>
 	</form>
+	<br>
 	{{range .Post.Comments}}
 	<p><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
 	{{.Created}} ago

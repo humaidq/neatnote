@@ -188,12 +188,23 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
 		return
-	} else if sess.Get("auth") == LoggedIn {
+	} else if sess.Get("auth") == LoggedIn || sess.Get("auth") != Verification {
 		ctx.Redirect("/")
 		return
 	}
 	ctx.Data["email"] = sess.Get("user")
 	ctx.HTML(200, "validate_login")
+}
+
+func CancelHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != Verification {
+		ctx.Redirect("/login")
+		return
+	}
+
+	sess.Set("auth", LoggedOut)
+	ctx.Redirect("/login")
 }
 
 func PostVerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
@@ -284,8 +295,8 @@ func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 
 	err := models.AddComment(&models.Comment{
 		PosterID: sess.Get("user").(string),
-		PostID: postID,
-		Text:   ctx.Query("text"),
+		PostID:   postID,
+		Text:     ctx.Query("text"),
 	})
 
 	if err != nil {
@@ -317,7 +328,7 @@ func PostCreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store
 	// TODO error handling
 	post := &models.Post{
 		CourseCode: ctx.Params("course"),
-		PosterID:     sess.Get("user").(string),
+		PosterID:   sess.Get("user").(string),
 		Locked:     false,
 		Title:      ctx.Query("title"),
 		Text:       ctx.Query("text"),

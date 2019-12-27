@@ -58,6 +58,7 @@ func start(clx *cli.Context) (err error) {
 	m.Get("/logout", routes.LogoutHandler)
 	m.Get("/verify", routes.VerifyHandler)
 	m.Post("/verify", routes.PostVerifyHandler)
+	m.Get("/cancel", routes.CancelHandler)
 
 	m.Group("/admin", func() {
 		m.Get("/add_course", routes.AdminAddCourseHandler)
