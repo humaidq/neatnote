@@ -6,7 +6,7 @@
 	{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 
-	<h2>Comments</h2>
+	<h2 id="comments">Comments</h2>
 
 	<form method="post">
 		<div>
@@ -18,7 +18,7 @@
 	</form>
 	<br>
 	{{range .Post.Comments}}
-	<p><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
+	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
 	{{.Created}} ago
 	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
 	<div class="comment">{{.FormattedText}}</div>

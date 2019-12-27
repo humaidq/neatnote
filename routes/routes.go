@@ -321,19 +321,20 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store) {
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
 
 	// TODO check if post/course exists
-
-	err := models.AddComment(&models.Comment{
+	com := &models.Comment{
 		PosterID: sess.Get("user").(string),
 		PostID:   postID,
 		Text:     ctx.Query("text"),
-	})
+	}
+
+	err := models.AddComment(com)
 
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-		ctx.Params("post")))
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s#c-%d", ctx.Params("course"),
+		ctx.Params("post"), com.CommentID))
 }
 
 func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
