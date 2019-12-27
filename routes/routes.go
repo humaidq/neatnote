@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"bytes"
 	"fmt"
 	"git.sr.ht/~humaid/notes-overflow/models"
 	"git.sr.ht/~humaid/notes-overflow/modules/mailer"
@@ -8,7 +9,10 @@ import (
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer/html"
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
 	"math/rand"
@@ -289,9 +293,22 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 }
 
 func markdownToHTML(s string) string {
-	unsafe := blackfriday.Run([]byte(s),
-		blackfriday.WithExtensions(blackfriday.HardLineBreak))
-	return string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
+	//	ext := blackfriday.Safelink & blackfriday.NoreferrerLinks
+	//		& blackfriday.NoopenerLinks & blackfriday.HrefTargetBlank & blackfriday.SmartyPants
+	md := goldmark.New(
+		goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithXHTML(),
+		),
+	)
+	var buf bytes.Buffer
+	if err := md.Convert([]byte(s), &buf); err != nil {
+		panic(err)
+	}
+	return string(bluemonday.UGCPolicy().SanitizeBytes(buf.Bytes()))
 }
 
 func PostCommentPostHandler(ctx *macaron.Context, sess session.Store) {

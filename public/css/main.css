@@ -183,3 +183,15 @@ nav ul li a:focus {
   outline: 1px solid #470214;
 }
 
+/* Tables */
+.post table {
+  border-collapse: collapse;
+}
+
+.post table, .post th, .post td {
+  border: 1px solid black;
+}
+
+.post td {
+	padding: 8px;
+}

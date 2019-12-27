@@ -15,9 +15,9 @@ require (
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
 	github.com/klauspost/compress v1.9.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
-	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/unknwon/com v1.0.1 // indirect
 	github.com/urfave/cli v1.22.2
+	github.com/yuin/goldmark v1.1.19
 	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
