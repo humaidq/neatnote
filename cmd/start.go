@@ -8,6 +8,7 @@ import (
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/captcha"
 	"github.com/go-macaron/csrf"
+	"github.com/go-macaron/gzip"
 	"github.com/go-macaron/session"
 	_ "github.com/go-macaron/session/mysql"
 	"github.com/urfave/cli"
@@ -32,7 +33,7 @@ func start(clx *cli.Context) (err error) {
 
 	// Run macaron
 	m := macaron.Classic()
-
+	m.Use(gzip.Gziper())
 	m.Use(macaron.Renderer())
 	m.Use(cache.Cacher())
 	sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
