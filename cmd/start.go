@@ -48,30 +48,30 @@ func start(clx *cli.Context) (err error) {
 	// Web routes
 	m.Get("/", routes.HomepageHandler)
 	m.Get("/profile", routes.ProfileHandler)
-	m.Post("/profile", routes.PostProfileHandler)
+	m.Post("/profile", csrf.Validate, routes.PostProfileHandler)
 	m.Get("/qna", routes.QnAHandler)
 	m.Get("/guidelines", routes.GuidelinesHandler)
 
 	// Login and verification
 	m.Get("/login", routes.LoginHandler)
-	m.Post("/login", routes.PostLoginHandler)
+	m.Post("/login", csrf.Validate, routes.PostLoginHandler)
 	m.Get("/logout", routes.LogoutHandler)
 	m.Get("/verify", routes.VerifyHandler)
-	m.Post("/verify", routes.PostVerifyHandler)
+	m.Post("/verify", csrf.Validate, routes.PostVerifyHandler)
 	m.Get("/cancel", routes.CancelHandler)
 
 	m.Group("/admin", func() {
 		m.Get("/add_course", routes.AdminAddCourseHandler)
-		m.Post("/add_course", routes.AdminPostAddCourseHandler)
+		m.Post("/add_course", csrf.Validate, routes.AdminPostAddCourseHandler)
 	})
 
 	m.Group("/course/:course", func() {
 		m.Get("/", routes.CourseHandler)
 		m.Get("/post", routes.CreatePostHandler)
-		m.Post("/post", routes.PostCreatePostHandler)
+		m.Post("/post", csrf.Validate, routes.PostCreatePostHandler)
 		m.Group("/:post", func() {
 			m.Get("/", routes.PostPageHandler)
-			m.Post("/", routes.PostCommentPostHandler)
+			m.Post("/", csrf.Validate, routes.PostCommentPostHandler)
 		})
 	})
 

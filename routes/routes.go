@@ -35,9 +35,9 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 			// TODO problem here...
 			fmt.Println("Cannot load auth'd user! ", err)
 		}
-
 	}
 	ctx.Data["SiteTitle"] = "Notes Overflow"
+
 }
 
 func HomepageHandler(ctx *macaron.Context, sess session.Store) {
@@ -54,13 +54,15 @@ func QnAHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	ctx.HTML(200, "qna")
 }
+
 func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	ctx.HTML(200, "guidelines")
 }
 
-func ProfileHandler(ctx *macaron.Context, sess session.Store) {
+func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctxInit(ctx, sess)
+	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "profile")
 }
 
@@ -89,7 +91,7 @@ func LogoutHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/")
 }
 
-func AdminAddCourseHandler(ctx *macaron.Context, sess session.Store) {
+func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
 		return // TODO some error handling
@@ -101,8 +103,11 @@ func AdminAddCourseHandler(ctx *macaron.Context, sess session.Store) {
 	}
 
 	if !user.IsAdmin {
+		ctx.Redirect("/")
 		return
 	}
+
+	ctx.Data["csrf_token"] = x.GetToken()
 
 	ctx.HTML(200, "admin/add-course")
 }
@@ -119,6 +124,7 @@ func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store) {
 	}
 
 	if !user.IsAdmin {
+		ctx.Redirect("/")
 		return
 	}
 
@@ -153,7 +159,7 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctx.HTML(200, "login")
 }
 
-func PostLoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func PostLoginHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
 		ctx.Redirect("/verify")
@@ -192,11 +198,15 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 		ctx.Redirect("/")
 		return
 	}
+	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.Data["email"] = sess.Get("user")
+	if ctx.Query("err") == "1" {
+		ctx.Data["invalid"] = 1
+	}
 	ctx.HTML(200, "validate_login")
 }
 
-func CancelHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func CancelHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != Verification {
 		ctx.Redirect("/login")
@@ -207,7 +217,7 @@ func CancelHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctx.Redirect("/login")
 }
 
-func PostVerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func PostVerifyHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
@@ -230,7 +240,7 @@ func PostVerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctx.Redirect("/")
 }
 
-func CourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func CourseHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 
 	course, err := models.GetCourse(ctx.Params("course"))
@@ -273,6 +283,8 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 			template.HTML(markdownToHTML(post.Comments[i].Text))
 	}
 
+	ctx.Data["csrf_token"] = x.GetToken()
+
 	ctx.HTML(200, "post")
 }
 
@@ -282,7 +294,7 @@ func markdownToHTML(s string) string {
 	return string(bluemonday.UGCPolicy().SanitizeBytes(unsafe))
 }
 
-func PostCommentPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func PostCommentPostHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
 		ctx.Redirect("/login")
@@ -315,9 +327,11 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	}
 	// check if course exists TODO
 
+	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "create-post")
 }
-func PostCreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+
+func PostCreatePostHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
 		ctx.Redirect("/login")

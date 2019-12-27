@@ -1,5 +1,9 @@
 {{template "base/head" .}}
 <div class="content">
+	{{if .invalid}}<div class="alert alert-red">
+	<p class="alert-title">Invalid code</p>
+	<p>The code you entered is invalid, make sure you use the latest code sent
+	to you.</p></div>{{end}}
 	<h2>Validation</h2>
 	<p>You will now receive an email at {{.email}} with a code.</p>
 	<form method="post">
