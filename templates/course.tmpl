@@ -1,5 +1,6 @@
 {{template "base/head" .}}
 <div class="content">
+	{{template "partials/flash" .}}
 	<p><a href="/">&lt; Go back</a></p>
 	<h2>{{.Course.Name}} ({{.Course.Code}}) notes</h2>
 	<a href="/course/{{.Course.Code}}/post" class="btn">Create a new post</a>

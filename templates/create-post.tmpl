@@ -6,17 +6,18 @@
 			<a href="/guidelines">guidelines</a>.</p>
 		<p><small>This notice will eventually disappear.</small></p>
 	</div>
+	{{template "partials/flash" .}}
 	<h2>Create a new post</h2>
 	<form method="post">
 		<div>
 			<label for="title">Title:</label>
-			<input type="text" id="title" name="title" required="1">
+			<input type="text" id="title" name="title" required="1" {{if .ptitle}}value="{{.ptitle}}"{{end}}>
 		</div>
 		<br />
 		<div>
-			 <textarea name="text" cols="70" rows="20" required="1"></textarea> 
+			 <textarea name="text" cols="70" rows="20" required="1">{{if .ptext}}{{.ptext}}{{end}}</textarea> 
 		</div>
-		<p>The post is formatted in Markdown, and MathJax is supported.</p>
+		<p>Formatting in Markdown, HTML, and LaTeX is supported.</p>
 		<br />
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Submit new post</button>

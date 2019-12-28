@@ -1,20 +1,19 @@
 {{template "base/head" .}}
 <div class="content">
+	{{template "partials/flash" .}}
 	<p><a href="/course/{{.Post.CourseCode}}">&lt; Go back</a></p>
 	<h2>{{.Post.Title}}</h2>
 	<p><small class="sgrey">Posted by {{if .Post.Poster.FullName}}{{.Post.Poster.FullName}}{{else}}{{.Post.Poster.Username}}{{end}}
 	{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
-
 	<h2 id="comments">Comments</h2>
-
 	<form method="post">
 		<div>
-			 <textarea name="text" cols="30" rows="4" required="1"></textarea> 
+			 <textarea name="text" cols="30" rows="4" required="1"{{if not .LoggedIn}}disabled="1"{{end}}>{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
 		</div>
 		<p>Comments can be formatted with HTML, Markdown, and $\LaTeX$ for Math.</p>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
-		<button type="submit" class="btn">Comment</button>
+		{{if .LoggedIn}}<button type="submit" class="btn">Comment</button>{{else}}<a href="/login" class="btn">Login</a>{{end}}
 	</form>
 	<br>
 	{{range .Post.Comments}}

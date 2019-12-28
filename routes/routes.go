@@ -17,6 +17,8 @@ import (
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
 	"math/rand"
+	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -25,6 +27,12 @@ const (
 	LoggedOut = iota
 	Verification
 	LoggedIn
+)
+
+var (
+	simpleTextExp = regexp.MustCompile(`^[a-zA-Z0-9 ]+$`)
+	// htmlTagExp roughly matches any HTML tag.
+	htmlTagExp = regexp.MustCompile(`\<?(\/)?[a-zA-Z0-9 "=\n:\/\.\@\#\&\;\+\-\?\,\_]+\>`)
 )
 
 func ctxInit(ctx *macaron.Context, sess session.Store) {
@@ -37,15 +45,16 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 		if user, err := models.GetUser(sess.Get("user").(string)); err == nil {
 			ctx.Data["User"] = user
 		} else {
-			// TODO problem here...
 			fmt.Println("Cannot load auth'd user! ", err)
+			// Let's log out the user
+			ctx.Data["LoggedIn"] = 0
+			sess.Set("auth", LoggedOut)
 		}
 	}
 	ctx.Data["SiteTitle"] = "Notes Overflow"
-
 }
 
-func HomepageHandler(ctx *macaron.Context, sess session.Store) {
+func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	courses := models.GetCourses()
 	for i := range courses {
@@ -65,23 +74,35 @@ func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.HTML(200, "guidelines")
 }
 
-func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before editing your profile.")
+		ctx.Redirect("/login", http.StatusUnauthorized)
+		return
+	}
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "profile")
 }
 
-func PostProfileHandler(ctx *macaron.Context, sess session.Store) {
+func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
-		ctx.Redirect("/login")
-		return // TODO some error handling
+		f.Error("Please login before editing your profile.")
+		ctx.Redirect("/login", http.StatusUnauthorized)
+		return
+	}
+	fname := ctx.QueryTrim("fullname")
+
+	if !simpleTextExp.Match([]byte(fname)) || len(fname) > 32 || len(fname) < 1 {
+		f.Error("Your display name must only contain alphabet, numbers, and spaces. And cannot be over 32 characters.")
+		ctx.Redirect("/profile")
+		return
 	}
 
-	// TODO validate fullname
 	err := models.UpdateUser(&models.User{
 		Username: sess.Get("user").(string),
-		FullName: ctx.Query("fullname"),
+		FullName: fname,
 	})
 	if err != nil {
 		panic(err)
@@ -90,24 +111,32 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/profile")
 }
 
-func LogoutHandler(ctx *macaron.Context, sess session.Store) {
+func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
+	if sess.Get("auth") != LoggedIn {
+		f.Info("You are already logged out!")
+		ctx.Redirect("/")
+		return
+	}
 	sess.Set("auth", LoggedOut)
 	//sess.Flush()
 	ctx.Redirect("/")
 }
 
-func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
-		return // TODO some error handling
+		f.Error("You are not authorised to do that!")
+		ctx.Redirect("/login")
+		return
 	}
 
 	user, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	if !user.IsAdmin {
+		f.Error("You are not authorised to do that!")
 		ctx.Redirect("/")
 		return
 	}
@@ -117,27 +146,36 @@ func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store
 	ctx.HTML(200, "admin/add-course")
 }
 
-func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store) {
+func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
-		return // TODO some error handling
+		f.Error("You are not authorised to do that!")
+		ctx.Redirect("/login")
+		return
 	}
 
 	user, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	if !user.IsAdmin {
+		f.Error("You are not authorised to do that!")
 		ctx.Redirect("/")
 		return
 	}
 
-	courseCode := ctx.Query("coursecode")
-	courseName := ctx.Query("coursename")
+	courseCode := ctx.QueryTrim("coursecode")
+	courseName := ctx.QueryTrim("coursename")
 
 	// Check if course exists already
-	if _, err1 := models.GetCourse(courseCode); err1 == nil {
+	if len(courseCode) < 1 || len(courseName) < 1 {
+		f.Error("You must specify course code and name!")
+		ctx.Redirect("/admin/add_course")
+		return
+	} else if _, err1 := models.GetCourse(courseCode); err1 == nil {
+		f.Error("Course already exists!")
+		ctx.Redirect("/admin/add_course")
 		return
 	}
 
@@ -151,12 +189,13 @@ func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/?add=1")
 }
 
-func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
 		ctx.Redirect("/verify")
 		return
 	} else if sess.Get("auth") == LoggedIn {
+		f.Info("You are already logged in!")
 		ctx.Redirect("/")
 		return
 	}
@@ -164,21 +203,24 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 	ctx.HTML(200, "login")
 }
 
-func PostLoginHandler(ctx *macaron.Context, sess session.Store) {
+func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
+		f.Warning("You need to verify before you continue.")
 		ctx.Redirect("/verify")
 		return
 	} else if sess.Get("auth") == LoggedIn {
+		f.Info("You are already logged in!")
 		ctx.Redirect("/")
 		return
 	}
 	// Generate code
 	code := fmt.Sprint(rand.Intn(8999) + 1000)
-	to := fmt.Sprintf("%s@hw.ac.uk", ctx.Query("email"))
+	to := fmt.Sprintf("%s@hw.ac.uk", ctx.QueryTrim("email"))
 	err := checkmail.ValidateFormat(to)
 	if err != nil {
-		ctx.PlainText(200, []byte("Invalid email")) // TODO replace all plaintext with proper response
+		f.Error("You provided an invalid email.")
+		ctx.Redirect("/login")
 		return
 	}
 
@@ -191,12 +233,13 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/verify")
 }
 
-func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
 		return
 	} else if sess.Get("auth") == LoggedIn || sess.Get("auth") != Verification {
+		f.Info("You are already logged in!")
 		ctx.Redirect("/")
 		return
 	}
@@ -243,29 +286,29 @@ func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 	ctx.Redirect("/")
 }
 
-func CourseHandler(ctx *macaron.Context, sess session.Store) {
+func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 
 	course, err := models.GetCourse(ctx.Params("course"))
 	if err != nil {
+		f.Error("Welp! The course doesn't exist.")
 		ctx.Redirect("/")
-		return // TODO proper error
+		return
 	}
 
 	course.LoadPosts()
-
 	ctx.Data["Course"] = course
-
 	ctx.HTML(200, "course")
 }
 
-func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 
 	course, err := models.GetCourse(ctx.Params("course"))
 	if err != nil {
+		f.Error("Welp! The course no longer exists.")
 		ctx.Redirect("/")
-		return // TODO proper error
+		return
 	}
 
 	ctx.Data["Course"] = course
@@ -285,6 +328,10 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 		post.Comments[i].FormattedText =
 			template.HTML(markdownToHTML(post.Comments[i].Text))
 	}
+	if sess.Get("c.text") != nil {
+		ctx.Data["ctext"] = sess.Get("c.text").(string)
+		sess.Delete("c.text")
+	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
 
@@ -292,8 +339,6 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
 }
 
 func markdownToHTML(s string) string {
-	//	ext := blackfriday.Safelink & blackfriday.NoreferrerLinks
-	//		& blackfriday.NoopenerLinks & blackfriday.HrefTargetBlank & blackfriday.SmartyPants
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),
 		goldmark.WithParserOptions(
@@ -310,23 +355,51 @@ func markdownToHTML(s string) string {
 	return string(bluemonday.UGCPolicy().SanitizeBytes(buf.Bytes()))
 }
 
-func PostCommentPostHandler(ctx *macaron.Context, sess session.Store) {
+func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you comment!")
 		ctx.Redirect("/login")
 		return
 	}
 
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
 
-	// TODO check if post/course exists
+	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+		f.Error("Welp! The course doesn't exist.")
+		ctx.Redirect("/")
+		return
+	}
+
+	post, err := models.GetPost(ctx.Params("post"))
+	if err != nil {
+		f.Error("Welp! The post no longer exists!")
+		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		return
+	}
+
+	if post.Locked {
+		f.Error("Comment cannot be posted as it has been locked.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	if getMarkdownLength(ctx.Params("post")) < 8 {
+		f.Error("The post is empty or too short!")
+		// Pass over the text and title to errored page
+		sess.Set("c.text", ctx.QueryTrim("text"))
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"), ctx.Params("post")))
+		return
+	}
+
 	com := &models.Comment{
 		PosterID: sess.Get("user").(string),
 		PostID:   postID,
-		Text:     ctx.Query("text"),
+		Text:     ctx.QueryTrim("text"),
 	}
 
-	err := models.AddComment(com)
+	err = models.AddComment(com)
 
 	if err != nil {
 		panic(err)
@@ -336,32 +409,66 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store) {
 		ctx.Params("post"), com.CommentID))
 }
 
-func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store) {
+func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you create a post!")
 		ctx.Redirect("/login")
 		return
 	}
-	// check if course exists TODO
+	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+		f.Error("Welp! The course no longer exist.")
+		ctx.Redirect("/")
+		return
+	}
+	if sess.Get("p.title") != nil && len(sess.Get("p.title").(string)) > 0 {
+		ctx.Data["ptitle"] = sess.Get("p.title").(string)
+		ctx.Data["ptext"] = sess.Get("p.text").(string)
+		sess.Delete("p.title")
+		sess.Delete("p.text")
+	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "create-post")
 }
 
-func PostCreatePostHandler(ctx *macaron.Context, sess session.Store) {
+func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you create a post!")
 		ctx.Redirect("/login")
 		return
 	}
-	// check if course exists TODO
 
-	// TODO error handling
+	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+		f.Error("Welp! The course doesn't exist.")
+		ctx.Redirect("/")
+		return
+	}
+	title := ctx.QueryTrim("title")
+	text := ctx.Query("text")
+
+	if !simpleTextExp.Match([]byte(title)) || len(title) > 32 || len(title) < 1 {
+		f.Error("Invalid title")
+		// Pass over the text and title to errored page
+		sess.Set("p.title", title)
+		sess.Set("p.text", text)
+		ctx.Redirect(fmt.Sprintf("/course/%s/post", ctx.Params("course")))
+		return
+	} else if getMarkdownLength(text) < 8 {
+		f.Error("The post is empty or too short!")
+		// Pass over the text and title to errored page
+		sess.Set("p.title", title)
+		sess.Set("p.text", text)
+		ctx.Redirect(fmt.Sprintf("/course/%s/post", ctx.Params("course")))
+		return
+	}
+
 	post := &models.Post{
 		CourseCode: ctx.Params("course"),
 		PosterID:   sess.Get("user").(string),
 		Locked:     false,
-		Title:      ctx.Query("title"),
+		Title:      ctx.QueryTrim("title"),
 		Text:       ctx.Query("text"),
 	}
 	err := models.AddPost(post)
@@ -370,4 +477,12 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store) {
 	}
 
 	ctx.Redirect(fmt.Sprintf("/course/%s/%d", ctx.Params("course"), post.PostID))
+}
+
+// getMarkdownLenngth renders the string provided, removes HTML tags and
+// returns the length of the trimmed final string. This is useful to determine
+// the post actual length.
+func getMarkdownLength(s string) int {
+	markdownHTMLWithoutTags := htmlTagExp.ReplaceAll([]byte(markdownToHTML(s)), []byte(""))
+	return len(strings.TrimSpace(string(markdownHTMLWithoutTags)))
 }

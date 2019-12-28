@@ -1,5 +1,6 @@
 {{template "base/head" .}}
 <div class="content">
+	{{template "partials/flash" .}}
 	{{if and .LoggedIn (not .User.FullName)}}<div class="alert alert-red">
 	<p class="alert-title">Setup your profile</p>
 	<p>Please set your display name in your <a href="/profile">profile
