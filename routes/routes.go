@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.sr.ht/~humaid/notes-overflow/models"
 	"git.sr.ht/~humaid/notes-overflow/modules/mailer"
+	"git.sr.ht/~humaid/notes-overflow/modules/settings"
 	"github.com/badoux/checkmail"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
@@ -181,12 +182,9 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store) {
 		return
 	}
 
-	go mailer.EmailCode(to, code)
-	/*if err != nil {
-		ctx.PlainText(200, []byte("Failed to email, go back and check email."))
-		fmt.Println(err)
-		return
-	}*/
+	if !settings.DevMode {
+		go mailer.EmailCode(to, code)
+	}
 	sess.Set("auth", Verification)
 	sess.Set("code", code)
 	sess.Set("user", to)
@@ -221,7 +219,7 @@ func CancelHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/login")
 }
 
-func PostVerifyHandler(ctx *macaron.Context, sess session.Store) {
+func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
@@ -230,8 +228,9 @@ func PostVerifyHandler(ctx *macaron.Context, sess session.Store) {
 		ctx.Redirect("/")
 		return
 	}
-	if ctx.Query("code") != sess.Get("code") {
-		ctx.Redirect("/verify?err=1") // TODO proper error
+	if ctx.QueryTrim("code") != sess.Get("code") && !settings.DevMode {
+		f.Error("The code you entered is invalid, make sure you use the latest code sent to you.")
+		ctx.Redirect("/verify")
 		return
 	}
 	sess.Set("auth", LoggedIn)

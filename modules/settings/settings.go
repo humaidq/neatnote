@@ -12,6 +12,7 @@ var (
 	EmailPassword   string
 	EmailSMTPServer string
 	DBConfig        DatabaseConfiguration
+	DevMode         bool
 )
 
 type DatabaseConfiguration struct {
@@ -29,6 +30,9 @@ func LoadConfig() {
 	EmailAddress = os.Getenv("email_address")
 	EmailPassword = os.Getenv("email_password")
 	EmailSMTPServer = os.Getenv("email_smtp_server")
+	if os.Getenv("dev_mode") == "1" {
+		DevMode = true
+	}
 
 	DBConfig = DatabaseConfiguration{
 		Host:     os.Getenv("db_host"),
