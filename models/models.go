@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"git.sr.ht/~humaid/notes-overflow/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
-	"github.com/go-xorm/xorm"
 	"github.com/hako/durafmt"
 	"html/template"
 	"log"
 	"time"
 	"xorm.io/core"
+	"xorm.io/xorm"
 )
 
 var (

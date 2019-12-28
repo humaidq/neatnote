@@ -74,5 +74,4 @@ func LoadConfig() {
 			log.Fatal(err)
 		}
 	}
-
 }
