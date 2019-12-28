@@ -196,7 +196,7 @@ func GetUser(user string) (*User, error) {
 // and syncs the schema.
 func SetupEngine() *xorm.Engine {
 	var err error
-	dbConf := &settings.DBConfig
+	dbConf := &settings.Config.DBConfig
 
 	address := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
 		dbConf.User, dbConf.Password, dbConf.Host, dbConf.Name)

@@ -6,7 +6,7 @@ import (
 )
 
 func EmailCode(to string, code string) (err error) {
-	from := settings.EmailAddress
+	from := settings.Config.EmailAddress
 	message := "From: <" + from + ">\n" +
 		"To: <" + to + ">\n" +
 		"Subject: Notes Overflow login code.\n\n" +
@@ -14,8 +14,8 @@ func EmailCode(to string, code string) (err error) {
 		"Ignore this message if you have not requested a login.\n\n" +
 		"- Notes Overflow\nThis message is sent from an unmonitored inbox."
 
-	err = smtp.SendMail(settings.EmailSMTPServer,
-		smtp.PlainAuth("", from, settings.EmailPassword, "smtp.migadu.com"),
+	err = smtp.SendMail(settings.Config.EmailSMTPServer,
+		smtp.PlainAuth("", from, settings.Config.EmailPassword, "smtp.migadu.com"),
 		from, []string{to}, []byte(message))
 
 	return err

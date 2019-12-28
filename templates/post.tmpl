@@ -9,7 +9,7 @@
 	<h2 id="comments">Comments</h2>
 	<form method="post">
 		<div>
-			 <textarea name="text" cols="30" rows="4" required="1"{{if not .LoggedIn}}disabled="1"{{end}}>{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
+			 <textarea name="text" cols="30" rows="4" required="1"{{if not .LoggedIn}} disabled="1"{{end}}>{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
 		</div>
 		<p>Comments can be formatted with HTML, Markdown, and $\LaTeX$ for Math.</p>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
@@ -33,5 +33,5 @@ MathJax = {
   }
 };
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script id="MathJax-script" async src="/js/mathjax3-es5-tex-mml-chtml.js"></script>
 {{template "base/footer" .}}

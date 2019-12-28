@@ -35,8 +35,8 @@ func start(clx *cli.Context) (err error) {
 	m.Use(macaron.Renderer())
 	m.Use(cache.Cacher())
 	sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
-		settings.DBConfig.User, settings.DBConfig.Password, settings.DBConfig.Host, settings.DBConfig.Name)
-	fmt.Println(sqlConfig)
+		settings.Config.DBConfig.User, settings.Config.DBConfig.Password,
+		settings.Config.DBConfig.Host, settings.Config.DBConfig.Name)
 	m.Use(session.Sessioner(session.Options{
 		Provider:       "mysql",
 		ProviderConfig: sqlConfig,
@@ -74,7 +74,7 @@ func start(clx *cli.Context) (err error) {
 		})
 	})
 
-	log.Printf("Starting web server on port %s\n", settings.SitePort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", settings.SitePort), m))
+	log.Printf("Starting web server on port %s\n", settings.Config.SitePort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", settings.Config.SitePort), m))
 	return nil
 }

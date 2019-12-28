@@ -51,6 +51,7 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 			sess.Set("auth", LoggedOut)
 		}
 	}
+	ctx.Data["UniEmailDomain"] = settings.Config.UniEmailDomain
 	ctx.Data["SiteTitle"] = "Notes Overflow"
 }
 
@@ -99,7 +100,7 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 		ctx.Redirect("/profile")
 		return
 	}
-
+	fmt.Println(fname)
 	err := models.UpdateUser(&models.User{
 		Username: sess.Get("user").(string),
 		FullName: fname,
@@ -216,7 +217,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 	}
 	// Generate code
 	code := fmt.Sprint(rand.Intn(8999) + 1000)
-	to := fmt.Sprintf("%s@hw.ac.uk", ctx.QueryTrim("email"))
+	to := fmt.Sprintf("%s%s", ctx.QueryTrim("email"), settings.Config.UniEmailDomain)
 	err := checkmail.ValidateFormat(to)
 	if err != nil {
 		f.Error("You provided an invalid email.")
@@ -224,7 +225,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 		return
 	}
 
-	if !settings.DevMode {
+	if !settings.Config.DevMode {
 		go mailer.EmailCode(to, code)
 	}
 	sess.Set("auth", Verification)
@@ -245,9 +246,6 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *ses
 	}
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.Data["email"] = sess.Get("user")
-	if ctx.Query("err") == "1" {
-		ctx.Data["invalid"] = 1
-	}
 	ctx.HTML(200, "validate_login")
 }
 
@@ -271,7 +269,7 @@ func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		ctx.Redirect("/")
 		return
 	}
-	if ctx.QueryTrim("code") != sess.Get("code") && !settings.DevMode {
+	if ctx.QueryTrim("code") != sess.Get("code") && !settings.Config.DevMode {
 		f.Error("The code you entered is invalid, make sure you use the latest code sent to you.")
 		ctx.Redirect("/verify")
 		return
