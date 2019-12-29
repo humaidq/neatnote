@@ -10,7 +10,8 @@
 	<form method="post">
 		<div>
 			<label for="email">Email:</label>
-			<input type="text" id="email" name="email" required="1">{{.UniEmailDomain}}
+			<input type="text" id="email" name="email" required="1"
+			autofocus="1">{{.UniEmailDomain}}
 		</div>
 		<br />
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">

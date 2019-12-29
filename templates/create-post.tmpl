@@ -11,7 +11,8 @@
 	<form method="post">
 		<div>
 			<label for="title">Title:</label>
-			<input type="text" id="title" name="title" required="1" {{if .ptitle}}value="{{.ptitle}}"{{end}}>
+			<input type="text" id="title" name="title" required="1"
+			autofocus="1"{{if .ptitle}} value="{{.ptitle}}"{{end}}>
 		</div>
 		<br />
 		<div>
