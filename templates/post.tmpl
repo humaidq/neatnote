@@ -9,9 +9,10 @@
 	<h2 id="comments">Comments</h2>
 	<form method="post">
 		<div>
-			 <textarea name="text" cols="30" rows="4" required="1"{{if not .LoggedIn}} disabled="1"{{end}}>{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
+			 <textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
+			 placeholder="Markdown, HTML, and LaTeX Math supported">{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
 		</div>
-		<p>Comments can be formatted with HTML, Markdown, and $\LaTeX$ for Math.</p>
+		<br>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		{{if .LoggedIn}}<button type="submit" class="btn">Comment</button>{{else}}<a href="/login" class="btn">Login</a>{{end}}
 	</form>
