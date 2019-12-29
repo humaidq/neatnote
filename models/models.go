@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"git.sr.ht/~humaid/notes-overflow/modules/settings"
+	"git.sr.ht/~humaid/nevernote/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
 	"github.com/hako/durafmt"
 	_ "github.com/mattn/go-sqlite3" // SQLite driver support

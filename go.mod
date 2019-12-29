@@ -1,4 +1,4 @@
-module git.sr.ht/~humaid/notes-overflow
+module git.sr.ht/~humaid/nevernote
 
 go 1.13
 

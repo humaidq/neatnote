@@ -2,18 +2,18 @@ image: archlinux
 packages:
   - go
 sources:
-  - https://git.sr.ht/~humaid/notes-overflow
+  - https://git.sr.ht/~humaid/nevernote
 tasks:
   - setup: |
-      cd notes-overflow
+      cd nevernote
       go get ./...
   - format: |
-      cd notes-overflow
+      cd nevernote
       go fmt $(go list ./... | grep -v /vendor/)
       go vet $(go list ./... | grep -v /vendor/)
   - test: |
-      cd notes-overflow
+      cd nevernote
       go test -cover -race $(go list ./... | grep -v /vendor/)
   - build: |
-      cd notes-overflow
+      cd nevernote
       go build
