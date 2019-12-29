@@ -344,6 +344,7 @@ func markdownToHTML(s string) string {
 		),
 		goldmark.WithRendererOptions(
 			html.WithXHTML(),
+			html.WithUnsafe(),
 		),
 	)
 	var buf bytes.Buffer
@@ -383,7 +384,7 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 		return
 	}
 
-	if getMarkdownLength(ctx.Params("post")) < 8 {
+	if getMarkdownLength(ctx.QueryTrim("text")) < 8 {
 		f.Error("The post is empty or too short!")
 		// Pass over the text and title to errored page
 		sess.Set("c.text", ctx.QueryTrim("text"))
