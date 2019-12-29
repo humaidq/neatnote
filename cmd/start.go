@@ -34,13 +34,17 @@ func start(clx *cli.Context) (err error) {
 	m := macaron.Classic()
 	m.Use(macaron.Renderer())
 	m.Use(cache.Cacher())
-	sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
-		settings.Config.DBConfig.User, settings.Config.DBConfig.Password,
-		settings.Config.DBConfig.Host, settings.Config.DBConfig.Name)
-	m.Use(session.Sessioner(session.Options{
-		Provider:       "mysql",
-		ProviderConfig: sqlConfig,
-	}))
+	if settings.Config.DBConfig.Type == settings.MySQL {
+		sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
+			settings.Config.DBConfig.User, settings.Config.DBConfig.Password,
+			settings.Config.DBConfig.Host, settings.Config.DBConfig.Name)
+		m.Use(session.Sessioner(session.Options{
+			Provider:       "mysql",
+			ProviderConfig: sqlConfig,
+		}))
+	} else {
+		m.Use(session.Sessioner())
+	}
 	m.Use(csrf.Csrfer())
 	m.Use(captcha.Captchaer())
 
@@ -58,7 +62,7 @@ func start(clx *cli.Context) (err error) {
 	m.Get("/logout", routes.LogoutHandler)
 	m.Get("/verify", routes.VerifyHandler)
 	m.Post("/verify", csrf.Validate, routes.PostVerifyHandler)
-	m.Get("/cancel", routes.CancelHandler)
+	m.Post("/cancel", csrf.Validate, routes.CancelHandler)
 
 	m.Group("/admin", func() {
 		m.Get("/add_course", routes.AdminAddCourseHandler)

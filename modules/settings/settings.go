@@ -26,11 +26,20 @@ type Configuration struct {
 	DBConfig        DatabaseConfiguration
 }
 
+type DBType int
+
+const (
+	MySQL = iota
+	SQLite
+)
+
 type DatabaseConfiguration struct {
+	Type     DBType
 	Host     string
 	Name     string
 	User     string
 	Password string
+	Path     string
 }
 
 func newConfig() Configuration {
@@ -42,10 +51,12 @@ func newConfig() Configuration {
 		EmailPassword:   "emailpasswordhere",
 		EmailSMTPServer: "smtp.migadu.com:587",
 		DBConfig: DatabaseConfiguration{
+			Type:     MySQL,
 			Host:     "localhost:3306",
 			Name:     "notes",
 			User:     "notes",
 			Password: "passwordhere",
+			Path:     "data.db",
 		},
 	}
 }

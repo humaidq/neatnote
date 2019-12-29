@@ -6,6 +6,7 @@ import (
 	"git.sr.ht/~humaid/notes-overflow/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
 	"github.com/hako/durafmt"
+	_ "github.com/mattn/go-sqlite3" // SQLite driver support
 	"html/template"
 	"log"
 	"time"
@@ -205,7 +206,13 @@ func SetupEngine() *xorm.Engine {
 
 	address := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
 		dbConf.User, dbConf.Password, dbConf.Host, dbConf.Name)
-	engine, err = xorm.NewEngine("mysql", address)
+
+	switch dbConf.Type {
+	case settings.MySQL:
+		engine, err = xorm.NewEngine("mysql", address)
+	case settings.SQLite:
+		engine, err = xorm.NewEngine("sqlite3", dbConf.Path)
+	}
 
 	if err != nil {
 		log.Fatal("Unable to connect/load the database! ", err)

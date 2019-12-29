@@ -1,3 +1,4 @@
 notes-overflow
 run.sh
 *.toml
+*.db

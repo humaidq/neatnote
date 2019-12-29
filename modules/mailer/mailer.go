@@ -9,7 +9,7 @@ func EmailCode(to string, code string) (err error) {
 	from := settings.Config.EmailAddress
 	message := "From: <" + from + ">\n" +
 		"To: <" + to + ">\n" +
-		"Subject: Notes Overflow login code.\n\n" +
+		"Subject: Notes Overflow login code\n\n" +
 		"Hello!\nYour login code is " + code + "\n" +
 		"Ignore this message if you have not requested a login.\n\n" +
 		"- Notes Overflow\nThis message is sent from an unmonitored inbox."

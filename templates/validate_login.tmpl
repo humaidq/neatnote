@@ -12,8 +12,11 @@
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Continue →</button>
 	</form>
-	<p><small>Wrong email or didn't receive the message? <a
-	href="/cancel">Go back</a>.</small></p>
+	<form method="post" action="/cancel">
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<p><small>Wrong email or didn't receive the message? <button type="submit"
+		class="btn">Go back</button></small></p>
+	</form>
 </div>
 {{template "base/footer" .}}
 
