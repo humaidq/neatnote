@@ -27,6 +27,19 @@
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Update</button>
 	</form>
+	<br>
+	<h2>Your Data</h2>
+	<form method="post" action="/profile/data.json">
+	<p>We collect your university username and any information you submit on
+	this site. We do not share your information to third-parties or use
+	analytics or tracking technologies.</p>
+	<p>You may download your data as a JSON file.</p>
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<button type="submit" class="btn">Request data</button>
+	<p><small>You may request your data to be deleted by contacting the <a
+	href="mailto:me@humaidq.ae">site administrator</a>.</small></p>
+	</form>
+
 
 </div>
 {{template "base/footer" .}}

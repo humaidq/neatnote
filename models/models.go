@@ -101,6 +101,11 @@ func (c *Comment) LoadCreated() (err error) {
 	return
 }
 
+func GetAllUserPosts(user string) (p []Post, err error) {
+	err = engine.Where("poster_id = ?", user).Find(&p)
+	return
+}
+
 func (c *Course) LoadPosts() (err error) {
 	err = engine.Where("course_code = ?", c.Code).Find(&c.Posts)
 	if err != nil {

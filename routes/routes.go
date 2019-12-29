@@ -52,6 +52,9 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 		}
 	}
 	ctx.Data["UniEmailDomain"] = settings.Config.UniEmailDomain
+	if settings.Config.DevMode {
+		ctx.Data["DevMode"] = 1
+	}
 	ctx.Data["SiteTitle"] = "Notes Overflow"
 }
 
@@ -110,6 +113,27 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 	}
 
 	ctx.Redirect("/profile")
+}
+
+func PostDataHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before editing your profile.")
+		ctx.Redirect("/login", http.StatusUnauthorized)
+		return
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	var p []models.Post
+	p, err = models.GetAllUserPosts(sess.Get("user").(string))
+
+	ctx.JSON(200, map[string]interface{}{
+		"user":  u,
+		"posts": p,
+	})
 }
 
 func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
@@ -217,7 +241,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 	}
 	// Generate code
 	code := fmt.Sprint(rand.Intn(8999) + 1000)
-	to := fmt.Sprintf("%s%s", ctx.QueryTrim("email"), settings.Config.UniEmailDomain)
+	to := fmt.Sprintf("%s%s", strings.ToLower(ctx.QueryTrim("email")), settings.Config.UniEmailDomain)
 	err := checkmail.ValidateFormat(to)
 	if err != nil {
 		f.Error("You provided an invalid email.")

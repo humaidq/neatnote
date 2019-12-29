@@ -7,6 +7,11 @@
         <link rel="stylesheet" href="/css/main.css" />
         <title>{{if .Title}}{{ .Title }} - {{end}}{{.SiteTitle}}</title>
         <link rel="icon" href="data:;base64," />
+		{{if .DevMode}}<style>
+		nav {
+			background-color: #fcabab;
+		}
+		</style>{{end}}
 	</head>
 	<body>
 		<div class="container">
