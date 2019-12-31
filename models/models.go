@@ -77,7 +77,7 @@ type Comment struct {
 }
 
 func UpdateUser(u *User) (err error) {
-	_, err = engine.Update(u)
+	_, err = engine.Id(u.Username).Update(u)
 	return
 }
 
