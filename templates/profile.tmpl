@@ -22,6 +22,14 @@
 	<td>Score (iota):</td>
 	<td>{{.User.Iota}}&iota;</td>
 	</tr>
+	<tr>
+	<td>Badge:</td>
+	<td>
+	{{range $i, $b := .AvailableBadges}}<input type="radio" name="badge"
+	value="{{$b}}"{{if or (eq $.User.Badge $b) (and (eq $.User.Badge "") (eq $b "None")) }} checked="1"{{end}}> {{$b}}
+	{{end}}
+	</td>
+	</tr>
 	</tbody>
 	</table>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">

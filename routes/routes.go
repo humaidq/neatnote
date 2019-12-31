@@ -55,6 +55,7 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 	if settings.Config.DevMode {
 		ctx.Data["DevMode"] = 1
 	}
+	ctx.Data["AvailableBadges"] = append(settings.Config.Badges, "None")
 	ctx.Data["SiteTitle"] = "Neat Note"
 }
 
@@ -89,6 +90,15 @@ func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *se
 	ctx.HTML(200, "profile")
 }
 
+func containsStringArray(a []string, s string) bool {
+	for _, e := range a {
+		if e == s {
+			return true
+		}
+	}
+	return false
+}
+
 func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -103,10 +113,22 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 		ctx.Redirect("/profile")
 		return
 	}
-	fmt.Println(fname)
+
+	var badge string
+	if ctx.Query("badge") != "None" {
+		if containsStringArray(settings.Config.Badges, ctx.Query("badge")) {
+			badge = ctx.Query("badge")
+		} else {
+			f.Error("Invalid badge selection, make sure you select a valid option.")
+			ctx.Redirect("/profile")
+			return
+		}
+	}
+
 	err := models.UpdateUser(&models.User{
 		Username: sess.Get("user").(string),
 		FullName: fname,
+		Badge:    badge,
 	})
 	if err != nil {
 		panic(err)

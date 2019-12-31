@@ -205,3 +205,10 @@ nav ul li a:focus {
 .post td {
 	padding: 8px;
 }
+
+.badge {
+  background: #dedede;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #3f3f3f;
+}

@@ -24,6 +24,7 @@ type Configuration struct {
 	EmailPassword   string
 	EmailSMTPServer string
 	DBConfig        DatabaseConfiguration
+	Badges          []string
 }
 
 type DBType int
@@ -58,6 +59,7 @@ func newConfig() Configuration {
 			Password: "passwordhere",
 			Path:     "data.db",
 		},
+		Badges: []string{"Edinburgh", "Dubai"},
 	}
 }
 

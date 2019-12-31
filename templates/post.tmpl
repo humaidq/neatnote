@@ -4,9 +4,9 @@
 	<p><a href="/course/{{.Post.CourseCode}}">&lt; Go back</a></p>
 	<h2>{{.Post.Title}}</h2>
 	<p><small class="sgrey">Posted by {{if .Post.Poster.FullName}}{{.Post.Poster.FullName}}{{else}}{{.Post.Poster.Username}}{{end}}
-	{{.Post.Created}} ago</small></p>
+	{{if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
-	<h2 id="comments">Comments</h2>
+	<h3 id="comments">Comments</h3>
 	<form method="post">
 		<div>
 			 <textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
@@ -19,7 +19,7 @@
 	<br>
 	{{range .Post.Comments}}
 	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
-	{{.Created}} ago
+	{{if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
 	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
 	<div class="comment">{{.FormattedText}}</div>
 	{{end}}

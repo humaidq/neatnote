@@ -31,6 +31,7 @@ func init() {
 type User struct {
 	Username    string `xorm:"pk"`
 	FullName    string `xorm:"text null"`
+	Badge       string `xorm:"text null"`
 	IsAdmin     bool   `xorm:"bool"`
 	Iota        int64
 	Created     string `xorm:"-"`
