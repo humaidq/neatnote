@@ -72,17 +72,21 @@ func init() {
 func LoadConfig() {
 	var err error
 	if _, err = toml.DecodeFile(WorkingDir+"/"+ConfigPath, &Config); err != nil {
-		log.Panicf("Cannot load config file. Error: %s", err)
-		var err error
+		log.Printf("Cannot load config file. Error: %s", err)
+		if os.IsNotExist(err) {
+			log.Println("Generating new configuration file, as it doesn't exist")
+			var err error
 
-		buf := new(bytes.Buffer)
-		if err = toml.NewEncoder(buf).Encode(newConfig()); err != nil {
-			log.Fatal(err)
-		}
+			buf := new(bytes.Buffer)
+			if err = toml.NewEncoder(buf).Encode(newConfig()); err != nil {
+				log.Fatal(err)
+			}
 
-		err = ioutil.WriteFile(ConfigPath, buf.Bytes(), 0600)
-		if err != nil {
-			log.Fatal(err)
+			err = ioutil.WriteFile(ConfigPath, buf.Bytes(), 0600)
+			if err != nil {
+				log.Fatal(err)
+			}
+			os.Exit(0)
 		}
 	}
 }
