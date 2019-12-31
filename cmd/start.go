@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"git.sr.ht/~humaid/nevernote/models"
-	"git.sr.ht/~humaid/nevernote/modules/settings"
-	"git.sr.ht/~humaid/nevernote/routes"
+	"git.sr.ht/~humaid/neatnote/models"
+	"git.sr.ht/~humaid/neatnote/modules/settings"
+	"git.sr.ht/~humaid/neatnote/routes"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/captcha"
 	"github.com/go-macaron/csrf"

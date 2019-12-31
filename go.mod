@@ -1,4 +1,4 @@
-module git.sr.ht/~humaid/nevernote
+module git.sr.ht/~humaid/neatnote
 
 go 1.13
 
@@ -12,7 +12,7 @@ require (
 	github.com/go-macaron/session v0.0.0-20191101041208-c5d57a35f512
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/mattn/go-sqlite3 v1.11.0
+	github.com/mattn/go-sqlite3 v2.0.2+incompatible
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/unknwon/com v1.0.1 // indirect
 	github.com/urfave/cli v1.22.2

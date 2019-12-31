@@ -3,9 +3,9 @@ package routes
 import (
 	"bytes"
 	"fmt"
-	"git.sr.ht/~humaid/nevernote/models"
-	"git.sr.ht/~humaid/nevernote/modules/mailer"
-	"git.sr.ht/~humaid/nevernote/modules/settings"
+	"git.sr.ht/~humaid/neatnote/models"
+	"git.sr.ht/~humaid/neatnote/modules/mailer"
+	"git.sr.ht/~humaid/neatnote/modules/settings"
 	"github.com/badoux/checkmail"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
@@ -55,7 +55,7 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 	if settings.Config.DevMode {
 		ctx.Data["DevMode"] = 1
 	}
-	ctx.Data["SiteTitle"] = "Nevernote"
+	ctx.Data["SiteTitle"] = "Neat Note"
 }
 
 func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
