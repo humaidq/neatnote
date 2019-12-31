@@ -57,7 +57,7 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 		ctx.Data["DevMode"] = 1
 	}
 	ctx.Data["AvailableBadges"] = append(settings.Config.Badges, "None")
-	ctx.Data["SiteTitle"] = "Neat Note"
+	ctx.Data["SiteTitle"] = settings.Config.SiteName
 }
 
 func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {

@@ -17,6 +17,7 @@ var (
 )
 
 type Configuration struct {
+	SiteName        string
 	SitePort        string
 	DevMode         bool
 	UniEmailDomain  string
@@ -45,6 +46,7 @@ type DatabaseConfiguration struct {
 
 func newConfig() Configuration {
 	return Configuration{
+		SiteName:        "Neat Note",
 		SitePort:        "8080",
 		DevMode:         false,
 		UniEmailDomain:  "@hw.ac.uk",
