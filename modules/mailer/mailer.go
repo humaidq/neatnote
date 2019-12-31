@@ -5,6 +5,7 @@ import (
 	"net/smtp"
 )
 
+// EmailCode emails the provided code to the provided email address.
 func EmailCode(to string, code string) (err error) {
 	from := settings.Config.EmailAddress
 	message := "From: <" + from + ">\n" +

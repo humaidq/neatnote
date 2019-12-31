@@ -16,6 +16,7 @@ var (
 	Config     Configuration
 )
 
+// Configuration represents the configuration file format.
 type Configuration struct {
 	SiteName        string
 	SitePort        string
@@ -28,6 +29,7 @@ type Configuration struct {
 	Badges          []string
 }
 
+// DBType represents the type of the database driver which will be used.
 type DBType int
 
 const (
@@ -35,6 +37,8 @@ const (
 	SQLite
 )
 
+// DatabaseConfiguration represents the general database configuration for all
+// database drivers.
 type DatabaseConfiguration struct {
 	Type     DBType
 	Host     string
@@ -73,6 +77,9 @@ func init() {
 		log.Fatal("Cannot get working directory! ", err)
 	}
 }
+
+// LoadConfig loads the configuration file from disk. It will also generate one
+// if it doesn't exist.
 func LoadConfig() {
 	var err error
 	if _, err = toml.DecodeFile(WorkingDir+"/"+ConfigPath, &Config); err != nil {

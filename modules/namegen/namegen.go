@@ -37,6 +37,7 @@ func init() {
 	rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
+// GetName returns a randomly generated name which is formatted.
 func GetName() (name string) {
 	name = fmt.Sprintf("%s %s", ADJ[rnd.Intn(len(ADJ))],
 		NOUN[rnd.Intn(len(NOUN))])
