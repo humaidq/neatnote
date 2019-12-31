@@ -3,8 +3,9 @@
 	{{template "partials/flash" .}}
 	<p><a href="/course/{{.Post.CourseCode}}">&lt; Go back</a></p>
 	<h2>{{.Post.Title}}</h2>
-	<p><small class="sgrey">Posted by {{if .Post.Poster.FullName}}{{.Post.Poster.FullName}}{{else}}{{.Post.Poster.Username}}{{end}}
-	{{if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago</small></p>
+	<p><small class="sgrey">Posted by {{.Poster}}
+	{{if .Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
+	{{else if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	<h3 id="comments">Comments</h3>
 	<form method="post">
@@ -18,8 +19,11 @@
 	</form>
 	<br>
 	{{range .Post.Comments}}
-	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by {{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}} 
-	{{if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
+	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by
+	{{if eq	$.Post.PosterID	.Poster.Username}}{{$.Poster}}{{else}}
+	{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
+	{{if $.Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
+	{{else if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
 	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
 	<div class="comment">{{.FormattedText}}</div>
 	{{end}}

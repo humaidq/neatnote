@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.sr.ht/~humaid/neatnote/models"
 	"git.sr.ht/~humaid/neatnote/modules/mailer"
+	"git.sr.ht/~humaid/neatnote/modules/namegen"
 	"git.sr.ht/~humaid/neatnote/modules/settings"
 	"github.com/badoux/checkmail"
 	"github.com/go-macaron/csrf"
@@ -366,6 +367,16 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 
 	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
 
+	if post.Anonymous {
+		ctx.Data["Poster"] = post.AnonName
+	} else {
+		if post.Poster.FullName == "" {
+			ctx.Data["Poster"] = strings.Split(post.PosterID, "@")[0]
+		} else {
+			ctx.Data["Poster"] = post.Poster.FullName
+		}
+	}
+
 	for i := range post.Comments {
 		post.Comments[i].LoadCreated()
 		post.Comments[i].LoadPoster()
@@ -515,7 +526,14 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.
 		Locked:     false,
 		Title:      ctx.QueryTrim("title"),
 		Text:       ctx.Query("text"),
+		Anonymous:  false,
 	}
+
+	if ctx.Query("anon") == "on" {
+		post.Anonymous = true
+		post.AnonName = namegen.GetName()
+	}
+
 	err := models.AddPost(post)
 	if err != nil {
 		panic(err)

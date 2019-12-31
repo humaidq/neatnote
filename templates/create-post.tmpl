@@ -19,6 +19,10 @@
 			 <textarea name="text" cols="70" rows="20" required="1">{{if .ptext}}{{.ptext}}{{end}}</textarea> 
 		</div>
 		<p>Markdown, HTML, and LaTeX Math is supported.</p>
+		<div>
+		<label for="anon">Post anonymously</label>
+		<input type="checkbox" id="anon" name="anon">
+		</div>
 		<br />
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn">Submit new post</button>

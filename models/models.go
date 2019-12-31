@@ -63,6 +63,8 @@ type Post struct {
 	CreatedUnix   int64     `xorm:"created"`
 	Created       string    `xorm:"-"`
 	UpdatedUnix   int64     `xorm:"updated"`
+	Anonymous     bool      `xorm:"notnull"`
+	AnonName      string    `xorm:"text null"`
 }
 
 type Comment struct {
