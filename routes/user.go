@@ -57,7 +57,7 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 		}
 	}
 
-	err := models.UpdateUser(&models.User{
+	err := models.UpdateUserBadge(&models.User{
 		Username: sess.Get("user").(string),
 		FullName: fname,
 		Badge:    badge,

@@ -97,6 +97,13 @@ func UpdateUser(u *User) (err error) {
 	return
 }
 
+// UpdateUserBadge updates a user in the database including the Badge field,
+// even if the field is empty.
+func UpdateUserBadge(u *User) (err error) {
+	_, err = engine.Id(u.Username).Cols("badge").Update(u)
+	return
+}
+
 // LoadPoster loads the poster of a comment in the non-mapped field of the
 // Comment struct.
 func (c *Comment) LoadPoster() (err error) {
