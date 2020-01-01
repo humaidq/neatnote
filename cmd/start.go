@@ -12,8 +12,10 @@ import (
 	_ "github.com/go-macaron/session/mysql" // MySQL driver for persistent sessions
 	"github.com/urfave/cli"
 	macaron "gopkg.in/macaron.v1"
+	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 // CmdStart represents a command-line command
@@ -32,7 +34,13 @@ func start(clx *cli.Context) (err error) {
 
 	// Run macaron
 	m := macaron.Classic()
-	m.Use(macaron.Renderer())
+	m.Use(macaron.Renderer(macaron.RenderOptions{
+		Funcs: []template.FuncMap{map[string]interface{}{
+			"CalcTime": func(sTime time.Time) string {
+				return fmt.Sprint(time.Since(sTime).Nanoseconds() / int64(time.Millisecond))
+			},
+		}},
+	}))
 	m.Use(cache.Cacher())
 	if settings.Config.DBConfig.Type == settings.MySQL {
 		sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",

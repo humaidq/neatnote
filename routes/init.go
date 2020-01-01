@@ -5,6 +5,7 @@ import (
 	"git.sr.ht/~humaid/neatnote/modules/settings"
 	"github.com/go-macaron/session"
 	macaron "gopkg.in/macaron.v1"
+	"time"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
 // This handles verifying the login status and setting some global
 // template variables.
 func ctxInit(ctx *macaron.Context, sess session.Store) {
+	ctx.Data["PageStartTime"] = time.Now()
 	if sess.Get("auth") == nil {
 		sess.Set("auth", LoggedOut)
 	}
