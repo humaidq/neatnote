@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"git.sr.ht/~humaid/neatnote/models"
 	"git.sr.ht/~humaid/neatnote/modules/settings"
+	"git.sr.ht/~humaid/neatnote/public"
 	"git.sr.ht/~humaid/neatnote/routes"
+	"git.sr.ht/~humaid/neatnote/templates"
+	"github.com/go-macaron/bindata"
 	"github.com/go-macaron/cache"
 	"github.com/go-macaron/captcha"
 	"github.com/go-macaron/csrf"
@@ -32,7 +35,24 @@ func start(clx *cli.Context) (err error) {
 
 	// Run macaron
 	m := macaron.Classic()
-	m.Use(macaron.Renderer())
+	m.Use(macaron.Static("public",
+		macaron.StaticOptions{
+			FileSystem: bindata.Static(bindata.Options{
+				Asset:      public.Asset,
+				AssetDir:   public.AssetDir,
+				AssetNames: public.AssetNames,
+				Prefix:     "",
+			}),
+		},
+	))
+	m.Use(macaron.Renderer(macaron.RenderOptions{
+		TemplateFileSystem: bindata.Templates(bindata.Options{
+			Asset:      templates.Asset,
+			AssetDir:   templates.AssetDir,
+			AssetNames: templates.AssetNames,
+			Prefix:     "",
+		}),
+	}))
 	m.Use(cache.Cacher())
 	if settings.Config.DBConfig.Type == settings.MySQL {
 		sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",

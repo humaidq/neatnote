@@ -7,13 +7,6 @@ tasks:
   - setup: |
       cd neatnote
       go get ./...
-  - format: |
-      cd neatnote
-      go fmt $(go list ./... | grep -v /vendor/)
-      go vet $(go list ./... | grep -v /vendor/)
-  - test: |
-      cd neatnote
-      go test -cover -race $(go list ./... | grep -v /vendor/)
   - build: |
       cd neatnote
-      go build
+      make all

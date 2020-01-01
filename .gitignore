@@ -1,3 +1,4 @@
 neatnote
 *.toml
 *.db
+bindata.go

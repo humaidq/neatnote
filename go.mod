@@ -6,6 +6,8 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/elazarl/go-bindata-assetfs v1.0.0 // indirect
+	github.com/go-macaron/bindata v0.0.0-20191101042848-1f434a96f7aa
 	github.com/go-macaron/cache v0.0.0-20191101040916-6575fa0eaf7b
 	github.com/go-macaron/captcha v0.0.0-20191101040934-3bb6001259f1
 	github.com/go-macaron/csrf v0.0.0-20191101041016-98718788f460
