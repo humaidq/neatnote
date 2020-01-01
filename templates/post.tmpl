@@ -22,7 +22,7 @@
 	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by
 	{{if eq	$.Post.PosterID	.Poster.Username}}{{$.Poster}}{{else}}
 	{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
-	{{if and (eq $.Post.PosterID .Poster.Username) $.Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
+	{{if $.Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
 	{{else if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
 	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
 	<div class="comment">{{.FormattedText}}</div>
@@ -38,5 +38,5 @@ MathJax = {
   }
 };
 </script>
-<script id="MathJax-script" async src="/js/mathjax3-es5-tex-mml-chtml.js"></script>
+<script id="MathJax-script" async src="/js/mathjax3-tex-svg-full.js"></script>
 {{template "base/footer" .}}
