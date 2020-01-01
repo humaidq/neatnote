@@ -3,7 +3,8 @@
 	{{template "partials/flash" .}}
 	<p><a href="/">&lt; Go back</a></p>
 	<h2>{{.Course.Name}} ({{.Course.Code}}) notes</h2>
-	<a href="/course/{{.Course.Code}}/post" class="btn">Create a new post</a>
+	{{if not .Course.Locked}}<a href="/course/{{.Course.Code}}/post"
+	class="btn">Create a new post</a>{{end}}
 	<ul>
 		{{range .Course.Posts}}
 		<li><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>

@@ -63,6 +63,9 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	ctx.Data["PosterID"] = strings.Split(post.PosterID, "@")[0]
 
 	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
+	if post.Locked || course.Locked {
+		ctx.Data["Locked"] = 1
+	}
 
 	if post.Anonymous {
 		ctx.Data["Poster"] = post.AnonName
@@ -118,9 +121,14 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
 
-	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
 		f.Error("Welp! The course doesn't exist.")
 		ctx.Redirect("/")
+		return
+	} else if c.Locked {
+		f.Error("This course is locked and you cannot comment on a post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
 		return
 	}
 
@@ -169,11 +177,16 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f 
 		ctx.Redirect("/login")
 		return
 	}
-	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
 		f.Error("Welp! The course no longer exist.")
 		ctx.Redirect("/")
 		return
+	} else if c.Locked {
+		f.Error("This course is locked and you cannot create a post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		return
 	}
+
 	if sess.Get("p.title") != nil && len(sess.Get("p.title").(string)) > 0 {
 		ctx.Data["ptitle"] = sess.Get("p.title").(string)
 		ctx.Data["ptext"] = sess.Get("p.text").(string)
@@ -193,11 +206,16 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.
 		return
 	}
 
-	if _, err := models.GetCourse(ctx.Params("course")); err != nil {
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
 		f.Error("Welp! The course doesn't exist.")
 		ctx.Redirect("/")
 		return
+	} else if c.Locked {
+		f.Error("This course is locked and you cannot create a post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		return
 	}
+
 	title := ctx.QueryTrim("title")
 	text := ctx.Query("text")
 

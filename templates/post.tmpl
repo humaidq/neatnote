@@ -8,7 +8,7 @@
 	{{else if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	<h3 id="comments">Comments</h3>
-	<form method="post">
+	{{if not .Locked}}<form method="post">
 		<div>
 			 <textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
 			 placeholder="Markdown, HTML, and LaTeX Math supported">{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
@@ -17,7 +17,7 @@
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		{{if .LoggedIn}}<button type="submit" class="btn">Comment</button>{{else}}<a href="/login" class="btn">Login</a>{{end}}
 	</form>
-	<br>
+	<br>{{end}}
 	{{range .Post.Comments}}
 	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by
 	{{if eq	$.Post.PosterID	.Poster.Username}}{{$.Poster}}{{else}}
