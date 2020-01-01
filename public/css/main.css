@@ -1,8 +1,7 @@
 /* Page style */
-@import url('https://fonts.googleapis.com/css?family=Merriweather&display=swap');
 body {
-  font-family: Roboto, sans-serif;
-  font-size: 1em;
+  font-family: "Source Sans Pro", "Lucidia Grande", "Segoe UI", "Roboto", sans-serif;
+  font-size: 1.2em;
   margin: 0;
   background-color: #f4f4f4;
 }
@@ -14,6 +13,7 @@ h1, h2, h3, h4, h5, h6 {
 p {
   margin: 10px 0;
 }
+
 .sgrey {
   color: #8f8f8f;
 }
@@ -29,13 +29,12 @@ p {
 }
 
 .post {
-  padding: 0 10%;
+  padding: 0 4vh;
 }
 
-.post p {
-	line-height: 25px;
-	font-family: 'Merriweather', serif;
-	font-size: 18px;
+.post {
+  line-height: 30px;
+  font-size: 1.2em;
 }
 
 .footer {
@@ -81,9 +80,20 @@ code {
 
 @media only screen and (max-width: 780px) {
   body {
-    font-size: 1.1em;
+    font-size: 1em;
+  }
+  .post {
+    padding: 0;
+    max-width: 100%;
+  }
+  p {
+    margin: 0;
+  }
+  textarea {
+    max-width: 100%;
   }
 }
+
 
 .btn {
   display: inline-block;
@@ -167,6 +177,7 @@ nav ul li a:focus {
   display: block;
   margin: 15px;
   padding: 8px;
+  color: #000;
 }
 
 .alert-title {
@@ -199,7 +210,7 @@ nav ul li a:focus {
 }
 
 .post table, .post th, .post td {
-  border: 1px solid black;
+  border: 1px solid #000;
 }
 
 .post td {
@@ -216,4 +227,22 @@ nav ul li a:focus {
 .comment img {
   max-width: 35%;
   max-height: 35%;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #202125;
+	color: #feffff;
+  }
+  .badge {
+    background-color: #3c4043;
+	color: #feffff;
+  }
+  .nav-right, .meta p {
+    float: right;
+    color: #98989f;
+  }
+  .post table, .post th, .post td {
+    border: 2px solid #4e4e4e;
+  }
 }
