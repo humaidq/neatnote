@@ -28,7 +28,8 @@ var (
 		"ferret", "finch", "frog", "gecko", "gnu", "bagot", "kiko", "serow",
 		"goose", "horse", "hyena", "jellyfish", "kangaroo", "koala", "kudu",
 		"lapwing", "lion", "lynx", "mink", "mongoose", "oryx", "otter", "owl",
-		"oyster", "pelican", "pony", "turtle", "weasel", "wren", "zebra"}
+		"oyster", "unicorn", "pelican", "pony", "turtle", "weasel", "wren",
+		"zebra"}
 )
 
 var rnd *rand.Rand
