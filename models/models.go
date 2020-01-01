@@ -39,6 +39,7 @@ type User struct {
 	Iota        int64
 	Created     string `xorm:"-"`
 	CreatedUnix int64  `xorm:"created"`
+	Upvoted     []int64
 }
 
 // Course represents a sub-forum on a website, and is defined with a course
