@@ -6,6 +6,7 @@ import (
 	macaron "gopkg.in/macaron.v1"
 )
 
+// HomepageHandler response for the home page.
 func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	courses := models.GetCourses()
@@ -16,11 +17,13 @@ func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash)
 	ctx.HTML(200, "index")
 }
 
+// QnAHandler response for the Questions and Answers page.
 func QnAHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	ctx.HTML(200, "qna")
 }
 
+// GuidelinesHandler response for the Guidelines page.
 func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	ctx.HTML(200, "guidelines")

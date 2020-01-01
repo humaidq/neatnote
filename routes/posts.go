@@ -20,11 +20,13 @@ import (
 )
 
 var (
+	// simpleTextExp matches a simple text string.
 	simpleTextExp = regexp.MustCompile(`^[a-zA-Z0-9 ]+$`)
 	// htmlTagExp roughly matches any HTML tag.
 	htmlTagExp = regexp.MustCompile(`\<?(\/)?[a-zA-Z0-9 "=\n:\/\.\@\#\&\;\+\-\?\,\_]+\>`)
 )
 
+// CourseHandler response for a course page.
 func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 
@@ -40,6 +42,7 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctx.HTML(200, "course")
 }
 
+// PostPageHandler response for a post page.
 func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 
@@ -93,6 +96,8 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	ctx.HTML(200, "post")
 }
 
+// markdownToHTML converts a string (in Markdown) and outputs (X)HTML.
+// The input may also contain HTML, and the output is sanitized.
 func markdownToHTML(s string) string {
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),
@@ -111,6 +116,7 @@ func markdownToHTML(s string) string {
 	return string(bluemonday.UGCPolicy().SanitizeBytes(buf.Bytes()))
 }
 
+// PostCommentPostHandler post response for posting a comment to a post.
 func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -170,6 +176,7 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 		ctx.Params("post"), com.CommentID))
 }
 
+// CreatePostHandler response for creating a new post.
 func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -198,6 +205,7 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f 
 	ctx.HTML(200, "create-post")
 }
 
+// PostCreatePostHandler post response for creating a new post.
 func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {

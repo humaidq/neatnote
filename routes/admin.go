@@ -7,6 +7,7 @@ import (
 	macaron "gopkg.in/macaron.v1"
 )
 
+// AdminAddCourseHandler response for adding a new course.
 func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -31,6 +32,7 @@ func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store
 	ctx.HTML(200, "admin/add-course")
 }
 
+// AdminPostAddCourseHandler post response for adding a new course.
 func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {

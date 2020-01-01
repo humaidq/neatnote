@@ -16,6 +16,9 @@ const (
 	LoggedIn
 )
 
+// ctxInit initialises the context using the session for every page.
+// This handles verifying the login status and setting some global
+// template variables.
 func ctxInit(ctx *macaron.Context, sess session.Store) {
 	if sess.Get("auth") == nil {
 		sess.Set("auth", LoggedOut)

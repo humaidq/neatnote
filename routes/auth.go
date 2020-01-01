@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// LogoutHandler response for logging out.
 func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	if sess.Get("auth") != LoggedIn {
 		f.Info("You are already logged out!")
@@ -24,6 +25,7 @@ func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctx.Redirect("/")
 }
 
+// LoginHandler response for logging in page.
 func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
@@ -38,6 +40,7 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *sess
 	ctx.HTML(200, "login")
 }
 
+// PostLoginHandler post response for login page.
 func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
@@ -68,6 +71,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 	ctx.Redirect("/verify")
 }
 
+// VerifyHandler response for verification page.
 func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
@@ -83,6 +87,7 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *ses
 	ctx.HTML(200, "validate_login")
 }
 
+// CancelHandler post response for canceling verification.
 func CancelHandler(ctx *macaron.Context, sess session.Store) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != Verification {
@@ -94,6 +99,7 @@ func CancelHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Redirect("/login")
 }
 
+// PostVerifyHandler post reponse for verification.
 func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {

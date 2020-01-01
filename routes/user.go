@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// ProfileHandler response for the profile page.
 func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -29,6 +30,7 @@ func containsStringArray(a []string, s string) bool {
 	return false
 }
 
+// PostProfileHandler post response for the profile page.
 func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
@@ -67,6 +69,7 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 	ctx.Redirect("/profile")
 }
 
+// PostDataHandler post response for requesting data (GDPR compliance).
 func PostDataHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
 	if sess.Get("auth") != LoggedIn {
