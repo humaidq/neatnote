@@ -229,6 +229,10 @@ nav ul li a:focus {
   max-height: 35%;
 }
 
+.entry {
+  padding: 5px 15px;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #202125;

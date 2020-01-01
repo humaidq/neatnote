@@ -5,16 +5,14 @@
 	<h2>{{.Course.Name}} ({{.Course.Code}}) notes</h2>
 	{{if not .Course.Locked}}<a href="/course/{{.Course.Code}}/post"
 	class="btn">Create a new post</a>{{end}}
-	<ul>
-		{{range .Course.Posts}}
-		<li><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
-		<div class="meta">
-			<p>0&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
-			{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
-			{{.Created}} ago | {{.CommentsCount}} comments</p>
-		</div>
-		</li>
-		{{end}}
-	</ul>
+	{{range .Course.Posts}}
+	<div class="entry"><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
+	<div class="meta">
+		<p>0&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
+		{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
+		{{.Created}} ago | {{.CommentsCount}} comments</p>
+	</div>
+	</div>
+	{{end}}
 </div>
 {{template "base/footer" .}}

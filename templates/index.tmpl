@@ -7,14 +7,12 @@
 	settings</a>.</p></div>{{end}}
 	<h2>Courses</h2>
 	{{if .User.IsAdmin}}<a href="/admin/add_course" class="btn">Add course</a>{{end}}
-	<ul>
-		{{range .Courses}}
-		<li><a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
-		<div class="meta">
-			<p>{{.PostsCount}} posts</p>
-		</div>
-		</li>
-		{{end}}
-	</ul>
+	{{range .Courses}}
+	<div class="entry"><a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
+	<div class="meta">
+		<p>{{.PostsCount}} posts</p>
+	</div>
+	</div>
+	{{end}}
 </div>
 {{template "base/footer" .}}
