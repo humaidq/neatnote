@@ -11,9 +11,12 @@ import (
 )
 
 var (
+	// WorkingDir is the current working directory of the project.
 	WorkingDir string
+	// ConfigPath is the configuration file name.
 	ConfigPath = "config.toml"
-	Config     Configuration
+	// Config is where the current configuration is loaded.
+	Config Configuration
 )
 
 // Configuration represents the configuration file format.

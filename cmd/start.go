@@ -9,7 +9,7 @@ import (
 	"github.com/go-macaron/captcha"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
-	_ "github.com/go-macaron/session/mysql"
+	_ "github.com/go-macaron/session/mysql" // MySQL driver for persistent sessions
 	"github.com/urfave/cli"
 	macaron "gopkg.in/macaron.v1"
 	"log"

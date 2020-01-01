@@ -77,7 +77,7 @@ type Post struct {
 	AnonName      string    `xorm:"text null"`
 }
 
-// A comment represents a comment on a Post. It keeps track of the poster and
+// Comment represents a comment on a Post. It keeps track of the poster and
 // which post it is posted to.
 type Comment struct {
 	CommentID     int64         `xorm:"pk autoincr"`
