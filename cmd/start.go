@@ -40,20 +40,24 @@ func start(clx *cli.Context) (err error) {
 				return fmt.Sprint(time.Since(sTime).Nanoseconds() / int64(time.Millisecond))
 			},
 		}},
+		IndentJSON: true,
 	}))
 
 	m.Use(cache.Cacher())
+	sessOpt := session.Options{
+		CookieLifeTime: 15778800, // 6 months
+		Gclifetime:     15778800,
+		CookieName:     "hithereimacookie",
+	}
 	if settings.Config.DBConfig.Type == settings.MySQL {
 		sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
 			settings.Config.DBConfig.User, settings.Config.DBConfig.Password,
 			settings.Config.DBConfig.Host, settings.Config.DBConfig.Name)
-		m.Use(session.Sessioner(session.Options{
-			Provider:       "mysql",
-			ProviderConfig: sqlConfig,
-		}))
-	} else {
-		m.Use(session.Sessioner())
+		sessOpt.Provider = "mysql"
+		sessOpt.ProviderConfig = sqlConfig
+		sessOpt.CookieLifeTime = 0
 	}
+	m.Use(session.Sessioner(sessOpt))
 	m.Use(csrf.Csrfer())
 	m.Use(captcha.Captchaer())
 
