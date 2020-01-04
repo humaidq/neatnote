@@ -18,14 +18,16 @@ func (p HotPosts) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
+func getHotScore(p Post) float64 {
+	t := time.Now().Sub(time.Unix(p.CreatedUnix, 0)).Seconds() / hotnessDelta
+	if t < 1 {
+		return float64(p.Iota)
+	}
+	return float64(p.Iota) / t
+}
+
 func (p HotPosts) Less(i, j int) bool {
-	// Time since posting i and j
-	ti := time.Now().Sub(time.Unix(p[i].CreatedUnix, 0))
-	tj := time.Now().Sub(time.Unix(p[j].CreatedUnix, 0))
-	// Scores of i and j
-	si := float64(p[i].Iota) / (ti.Seconds() / hotnessDelta)
-	sj := float64(p[j].Iota) / (tj.Seconds() / hotnessDelta)
-	return si > sj
+	return getHotScore(p[i]) > getHotScore(p[j])
 }
 
 // TopPosts implements sort.Interface for []Post based on highest iota.
