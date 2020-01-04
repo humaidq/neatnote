@@ -51,6 +51,131 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	ctx.HTML(200, "course")
 }
 
+// EditPostHandler response for a post page.
+func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you comment!")
+		ctx.Redirect("/login")
+		return
+	}
+
+	course, err := models.GetCourse(ctx.Params("course"))
+	if err != nil {
+		f.Error("Welp! The course no longer exists.")
+		ctx.Redirect("/")
+		return
+	}
+
+	ctx.Data["Course"] = course
+
+	var post *models.Post
+	post, err = models.GetPost(ctx.Params("post"))
+	if err != nil {
+		panic(err)
+	}
+	ctx.Data["Post"] = post
+
+	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
+	if post.Locked || course.Locked {
+		f.Error("This post/course is locked from editing.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
+		f.Error("You may not edit this post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.HTML(200, "edit-post")
+}
+
+func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you comment!")
+		ctx.Redirect("/login")
+		return
+	}
+
+	course, err := models.GetCourse(ctx.Params("course"))
+	if err != nil {
+		f.Error("Welp! The course no longer exists.")
+		ctx.Redirect("/")
+		return
+	}
+
+	ctx.Data["Course"] = course
+
+	var post *models.Post
+	post, err = models.GetPost(ctx.Params("post"))
+	if err != nil {
+		panic(err)
+	}
+	ctx.Data["Post"] = post
+
+	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
+	if post.Locked || course.Locked {
+		f.Error("This post/course is locked from editing.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
+		f.Error("You may not edit this post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+	title := ctx.QueryTrim("title")
+	text := ctx.QueryTrim("text")
+
+	if !simpleTextExp.Match([]byte(title)) || len(title) > 32 || len(title) < 1 {
+		f.Error("Invalid title.")
+		// Pass over the text and title to errored page
+		sess.Set("p.title", title)
+		sess.Set("p.text", text)
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	} else if getMarkdownLength(text) < 8 {
+		f.Error("The post is empty or too short!")
+		// Pass over the text and title to errored page
+		sess.Set("p.title", title)
+		sess.Set("p.text", text)
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	err = models.UpdatePost(&models.Post{
+		PostID: post.PostID,
+		Title:  title,
+		Text:   text,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	f.Success("Post updated successfully.")
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Params("post")))
+}
+
 // PostPageHandler response for a post page.
 func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctxInit(ctx, sess)
@@ -247,7 +372,7 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.
 	text := ctx.Query("text")
 
 	if !simpleTextExp.Match([]byte(title)) || len(title) > 32 || len(title) < 1 {
-		f.Error("Invalid title")
+		f.Error("Invalid title.")
 		// Pass over the text and title to errored page
 		sess.Set("p.title", title)
 		sess.Set("p.text", text)

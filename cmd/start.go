@@ -91,6 +91,8 @@ func start(clx *cli.Context) (err error) {
 			m.Get("/", routes.PostPageHandler)
 			m.Post("/", csrf.Validate, routes.PostCommentPostHandler)
 			m.Get("/upvote", routes.UpvotePostHandler)
+			m.Get("/edit", routes.EditPostHandler)
+			m.Post("/edit", routes.PostEditPostHandler)
 		})
 	})
 

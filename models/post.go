@@ -46,6 +46,12 @@ func GetPost(id string) (*Post, error) {
 	return p, nil
 }
 
+// UpdatePost updates a post in the database.
+func UpdatePost(p *Post) (err error) {
+	_, err = engine.Id(p.PostID).Update(p)
+	return
+}
+
 // AddPost adds a new Post to the database.
 func AddPost(p *Post) (err error) {
 	_, err = engine.Insert(p)

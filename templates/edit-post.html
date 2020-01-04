@@ -1,0 +1,25 @@
+{{template "base/head" .}}
+<div class="content">
+	{{template "partials/flash" .}}
+	<h2>Edit your post</h2>
+	<form method="post">
+		<div>
+			<label for="title">Title:</label>
+			<input type="text" id="title" name="title" required="1"
+			autofocus="1" value="{{.Post.Title}}">
+		</div>
+		<br />
+		<div>
+			 <textarea name="text" cols="70" rows="20" required="1">{{.Post.Text}}</textarea> 
+		</div>
+		<br />
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<p><button type="submit" class="btn">Submit changes</button>
+		<a class="btn btn-danger"
+		   href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}">Discard
+		changes</a></p>
+	</form>
+
+</div>
+{{template "base/footer" .}}
+
