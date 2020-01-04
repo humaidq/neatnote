@@ -3,9 +3,15 @@
 	{{template "partials/flash" .}}
 	<p><a href="/course/{{.Post.CourseCode}}">&lt; Go back</a></p>
 	<h2>{{.Post.Title}}</h2>
-	<p><small class="sgrey">Posted by {{.Poster}}
+	<p><small class="sgrey">{{.Post.Iota}}&iota; by {{.Poster}}
 	{{if .Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
-	{{else if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago</small></p>
+	{{else if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago
+	{{if not .Locked}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/upvote">
+	[upvote]</a>{{end}}{{if .LoggedIn}}{{if and .User.IsAdmin .Post.Anonymous}}
+	<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/reveal">[reveal]</a>{{end}}
+	{{if or .User.IsAdmin (eq .Post.PosterID .User.Username)}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/edit">
+	[edit]</a>{{end}}{{end}}
+	</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	<h3 id="comments">Comments</h3>
 	{{if not .Locked}}<form method="post">

@@ -37,9 +37,9 @@ type User struct {
 	Badge       string `xorm:"text null"`
 	IsAdmin     bool   `xorm:"bool"`
 	Iota        int64
-	Created     string `xorm:"-"`
-	CreatedUnix int64  `xorm:"created"`
-	Upvoted     []int64
+	Created     string  `xorm:"-"`
+	CreatedUnix int64   `xorm:"created"`
+	Upvoted     []int64 // Post IDs which the user upvoted.
 }
 
 // Course represents a sub-forum on a website, and is defined with a course
@@ -76,6 +76,7 @@ type Post struct {
 	UpdatedUnix   int64     `xorm:"updated"`
 	Anonymous     bool      `xorm:"notnull"`
 	AnonName      string    `xorm:"text null"`
+	Iota          int64
 }
 
 // Comment represents a comment on a Post. It keeps track of the poster and
@@ -103,6 +104,56 @@ func UpdateUser(u *User) (err error) {
 func UpdateUserBadge(u *User) (err error) {
 	_, err = engine.Id(u.Username).Cols("badge").Update(u)
 	return
+}
+
+func UpvotePost(user string, post int64) (err error) {
+	sess := engine.NewSession()
+	if err = sess.Begin(); err != nil {
+		return err
+	}
+	u := new(User)
+	var has bool
+	if has, err = sess.ID(user).Get(u); err != nil {
+		return err
+	} else if !has {
+		return errors.New("User does not exist.")
+	}
+
+	if containsInt64(u.Upvoted, post) {
+		return errors.New("Already upvoted")
+	}
+
+	_, err = sess.Id(u.Username).Update(&User{
+		Username: u.Username,
+		Upvoted:  append(u.Upvoted, post),
+	})
+	if err != nil {
+		return err
+	}
+
+	p := new(Post)
+	has, err = sess.ID(post).Get(p)
+	if has, err = sess.ID(user).Get(u); err != nil {
+		return err
+	} else if !has {
+		return errors.New("Post does not exist.")
+	}
+
+	_, err = sess.ID(post).Update(&Post{
+		PostID: post,
+		Iota:   p.Iota + 1,
+	})
+
+	return sess.Commit()
+}
+
+func containsInt64(a []int64, i int64) bool {
+	for _, v := range a {
+		if v == i {
+			return true
+		}
+	}
+	return false
 }
 
 // LoadPoster loads the poster of a comment in the non-mapped field of the

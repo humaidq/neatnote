@@ -8,7 +8,7 @@
 	{{range .Course.Posts}}
 	<div class="entry"><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
 	<div class="meta">
-		<p>0&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
+		<p>{{.Iota}}&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
 		{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
 		{{.Created}} ago | {{.CommentsCount}} comments</p>
 	</div>

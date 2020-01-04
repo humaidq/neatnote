@@ -41,6 +41,7 @@ func start(clx *cli.Context) (err error) {
 			},
 		}},
 	}))
+
 	m.Use(cache.Cacher())
 	if settings.Config.DBConfig.Type == settings.MySQL {
 		sqlConfig := fmt.Sprintf("%s:%s@tcp(%s)/%s",
@@ -84,6 +85,7 @@ func start(clx *cli.Context) (err error) {
 		m.Group("/:post", func() {
 			m.Get("/", routes.PostPageHandler)
 			m.Post("/", csrf.Validate, routes.PostCommentPostHandler)
+			m.Get("/upvote", routes.UpvotePostHandler)
 		})
 	})
 

@@ -272,3 +272,51 @@ func getMarkdownLength(s string) int {
 	markdownHTMLWithoutTags := htmlTagExp.ReplaceAll([]byte(markdownToHTML(s)), []byte(""))
 	return len(strings.TrimSpace(string(markdownHTMLWithoutTags)))
 }
+
+// UpvotePostHandler post response for posting a comment to a post.
+func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login before you comment!")
+		ctx.Redirect("/login")
+		return
+	}
+
+	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
+
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
+		f.Error("Welp! The course doesn't exist.")
+		ctx.Redirect("/")
+		return
+	} else if c.Locked {
+		f.Error("This course is locked and you cannot comment on a post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	post, err := models.GetPost(ctx.Params("post"))
+	if err != nil {
+		f.Error("Welp! The post no longer exists!")
+		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		return
+	}
+
+	if post.Locked {
+		f.Error("Comment cannot be posted as it has been locked.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	err = models.UpvotePost(sess.Get("user").(string), postID)
+	if err != nil {
+		f.Error(fmt.Sprintf("%s.", err))
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Params("post")))
+}
