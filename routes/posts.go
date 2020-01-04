@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"git.sr.ht/~humaid/neatnote/models"
+	"git.sr.ht/~humaid/neatnote/modules/common"
 	"git.sr.ht/~humaid/neatnote/modules/namegen"
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
@@ -309,12 +310,29 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		return
 	}
 
-	err = models.UpvotePost(sess.Get("user").(string), postID)
+	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
-		f.Error(fmt.Sprintf("%s.", err))
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
+		panic(err)
+	}
+
+	if common.ContainsInt64(u.Upvoted, postID) {
+		err = models.UnvotePost(sess.Get("user").(string), postID)
+		if err != nil {
+			f.Error(fmt.Sprintf("%s.", err))
+			ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+				ctx.Params("post")))
+			return
+		}
+		f.Info("You have unvoted the post.")
+	} else {
+		err = models.UpvotePost(sess.Get("user").(string), postID)
+		if err != nil {
+			f.Error(fmt.Sprintf("%s.", err))
+			ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+				ctx.Params("post")))
+			return
+		}
+		f.Info("Post upvoted.")
 	}
 
 	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),

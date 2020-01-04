@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"git.sr.ht/~humaid/neatnote/modules/common"
 	"git.sr.ht/~humaid/neatnote/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
 	"github.com/hako/durafmt"
@@ -106,6 +107,50 @@ func UpdateUserBadge(u *User) (err error) {
 	return
 }
 
+func UnvotePost(user string, post int64) (err error) {
+	sess := engine.NewSession()
+	if err = sess.Begin(); err != nil {
+		return err
+	}
+	u := new(User)
+	var has bool
+	if has, err = sess.ID(user).Get(u); err != nil {
+		return err
+	} else if !has {
+		return errors.New("User does not exist.")
+	}
+
+	if !common.ContainsInt64(u.Upvoted, post) {
+		return errors.New("Cannot unvote a post which is not upvoted.")
+	}
+
+	p := new(Post)
+	has, err = sess.ID(post).Get(p)
+	if has, err = sess.ID(user).Get(u); err != nil {
+		return err
+	} else if !has {
+		return errors.New("Post does not exist.")
+	}
+
+	_, err = sess.Id(u.Username).Cols("upvoted").Update(&User{
+		Username: u.Username,
+		Upvoted:  common.RemoveInt64(u.Upvoted, post),
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = sess.ID(post).Cols("iota").Update(&Post{
+		PostID: post,
+		Iota:   p.Iota - 1,
+	})
+	if err != nil {
+		return err
+	}
+
+	return sess.Commit()
+}
+
 func UpvotePost(user string, post int64) (err error) {
 	sess := engine.NewSession()
 	if err = sess.Begin(); err != nil {
@@ -119,16 +164,8 @@ func UpvotePost(user string, post int64) (err error) {
 		return errors.New("User does not exist.")
 	}
 
-	if containsInt64(u.Upvoted, post) {
+	if common.ContainsInt64(u.Upvoted, post) {
 		return errors.New("Already upvoted")
-	}
-
-	_, err = sess.Id(u.Username).Update(&User{
-		Username: u.Username,
-		Upvoted:  append(u.Upvoted, post),
-	})
-	if err != nil {
-		return err
 	}
 
 	p := new(Post)
@@ -139,21 +176,23 @@ func UpvotePost(user string, post int64) (err error) {
 		return errors.New("Post does not exist.")
 	}
 
-	_, err = sess.ID(post).Update(&Post{
+	_, err = sess.Id(u.Username).Cols("upvoted").Update(&User{
+		Username: u.Username,
+		Upvoted:  append(u.Upvoted, post),
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = sess.ID(post).Cols("iota").Update(&Post{
 		PostID: post,
 		Iota:   p.Iota + 1,
 	})
+	if err != nil {
+		return err
+	}
 
 	return sess.Commit()
-}
-
-func containsInt64(a []int64, i int64) bool {
-	for _, v := range a {
-		if v == i {
-			return true
-		}
-	}
-	return false
 }
 
 // LoadPoster loads the poster of a comment in the non-mapped field of the
