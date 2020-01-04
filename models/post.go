@@ -64,6 +64,11 @@ func GetAllUserPosts(user string) (p []Post, err error) {
 	return
 }
 
+// GetUserPostCount returns number of posts by a specific user.
+func GetUserPostCount(user string) (i int64, err error) {
+	return engine.Where("poster_id = ?", user).Count(new(Post))
+}
+
 func UnvotePost(user string, post int64) (err error) {
 	sess := engine.NewSession()
 	if err = sess.Begin(); err != nil {

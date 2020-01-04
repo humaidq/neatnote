@@ -1,11 +1,11 @@
 {{template "base/head" .}}
 <div class="content">
-	<div class="alert alert-red">
+	{{if not .HideNotice}}<div class="alert alert-red">
 		<p class="alert-title">Notice: Check out our guidelines</p>
 		<p>Before you post anything, please check out our
 			<a href="/guidelines">guidelines</a>.</p>
 		<p><small>This notice will eventually disappear.</small></p>
-	</div>
+	</div>{{end}}
 	{{template "partials/flash" .}}
 	<h2>Create a new post</h2>
 	<form method="post">

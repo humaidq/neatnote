@@ -23,7 +23,7 @@ import (
 
 var (
 	// simpleTextExp matches a simple text string.
-	simpleTextExp = regexp.MustCompile(`^[a-zA-Z0-9 ]+$`)
+	simpleTextExp = regexp.MustCompile(`^[a-zA-Z0-9 \-\_\.\#\/\?\,\+\&\:\(\)\[\]]+$`)
 	// htmlTagExp roughly matches any HTML tag.
 	htmlTagExp = regexp.MustCompile(`\<?(\/)?[a-zA-Z0-9 "=\n:\/\.\@\#\&\;\+\-\?\,\_]+\>`)
 )
@@ -93,6 +93,12 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
+	}
+	if sess.Get("p.title") != nil && len(sess.Get("p.title").(string)) > 0 {
+		ctx.Data["ptitle"] = sess.Get("p.title").(string)
+		ctx.Data["ptext"] = sess.Get("p.text").(string)
+		sess.Delete("p.title")
+		sess.Delete("p.text")
 	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
@@ -343,6 +349,12 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f 
 		ctx.Data["ptext"] = sess.Get("p.text").(string)
 		sess.Delete("p.title")
 		sess.Delete("p.text")
+	}
+
+	if i, err := models.GetUserPostCount(sess.Get("user").(string)); err != nil {
+		panic(err)
+	} else if i > 2 {
+		ctx.Data["HideNotice"] = 1 // Hide 'read the guidelines' notice
 	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
