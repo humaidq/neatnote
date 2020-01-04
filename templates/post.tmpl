@@ -7,7 +7,7 @@
 	{{if .Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
 	{{else if .Post.Poster.Badge}}<span class="badge">{{.Post.Poster.Badge}}</span> {{end}}{{.Post.Created}} ago
 	{{if not .Locked}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/upvote">
-	[upvote]</a>{{end}}{{if .LoggedIn}}{{if and .User.IsAdmin .Post.Anonymous}}
+	{{if .Upvoted}}[unvote]{{else}}[upvote]{{end}}</a>{{end}}{{if .LoggedIn}}{{if and .User.IsAdmin .Post.Anonymous}}
 	<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/reveal">[reveal]</a>{{end}}
 	{{if or .User.IsAdmin (eq .Post.PosterID .User.Username)}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/edit">
 	[edit]</a>{{end}}{{end}}

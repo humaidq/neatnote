@@ -92,6 +92,14 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 		sess.Delete("c.text")
 	}
 
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if common.ContainsInt64(u.Upvoted, post.PostID) {
+		ctx.Data["Upvoted"] = 1
+	}
+
 	ctx.Data["csrf_token"] = x.GetToken()
 
 	ctx.HTML(200, "post")
