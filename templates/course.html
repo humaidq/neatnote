@@ -3,6 +3,9 @@
 	{{template "partials/flash" .}}
 	<p><a href="/">&lt; Go back</a></p>
 	<h2>{{.Course.Name}} ({{.Course.Code}}) notes</h2>
+	<p>Sort by: <a href="/course/{{.Course.Code}}">hot</a> | <a
+	href="/course/{{.Course.Code}}/top">top</a> | <a
+	href="/course/{{.Course.Code}}/new">new</a></p>
 	{{if not .Course.Locked}}<a href="/course/{{.Course.Code}}/post"
 	class="btn">Create a new post</a>{{end}}
 	{{range .Course.Posts}}

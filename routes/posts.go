@@ -16,6 +16,7 @@ import (
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -39,6 +40,13 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	}
 
 	course.LoadPosts()
+	if ctx.Params("sort") == "top" {
+		sort.Sort(models.TopPosts(course.Posts))
+	} else if ctx.Params("sort") == "new" {
+		sort.Sort(models.NewPosts(course.Posts))
+	} else {
+		sort.Sort(models.HotPosts(course.Posts))
+	}
 	ctx.Data["Course"] = course
 	ctx.HTML(200, "course")
 }

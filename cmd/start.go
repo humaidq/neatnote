@@ -84,6 +84,7 @@ func start(clx *cli.Context) (err error) {
 
 	m.Group("/course/:course", func() {
 		m.Get("/", routes.CourseHandler)
+		m.Get("/:sort(new|top)", routes.CourseHandler)
 		m.Get("/post", routes.CreatePostHandler)
 		m.Post("/post", csrf.Validate, routes.PostCreatePostHandler)
 		m.Group("/:post", func() {
