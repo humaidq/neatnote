@@ -95,6 +95,7 @@ func start(clx *cli.Context) (err error) {
 			m.Post("/edit", routes.PostEditPostHandler)
 			m.Get("/del/:id", routes.DeleteCommentHandler)
 			m.Get("/del", routes.DeletePostHandler)
+			m.Get("/reveal", routes.RevealPosterHandler)
 		})
 	})
 
