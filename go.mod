@@ -15,7 +15,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/unknwon/com v1.0.1 // indirect
-	github.com/urfave/cli v1.22.2
+	github.com/urfave/cli/v2 v2.1.1
 	github.com/yuin/goldmark v1.1.19
 	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect

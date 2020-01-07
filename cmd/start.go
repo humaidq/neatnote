@@ -10,7 +10,7 @@ import (
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	_ "github.com/go-macaron/session/mysql" // MySQL driver for persistent sessions
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
 	"log"
@@ -20,7 +20,7 @@ import (
 
 // CmdStart represents a command-line command
 // which starts the bot.
-var CmdStart = cli.Command{
+var CmdStart = &cli.Command{
 	Name:    "run",
 	Aliases: []string{"start", "web"},
 	Usage:   "Start the web server",
