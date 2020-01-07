@@ -29,7 +29,12 @@ func ctxInit(ctx *macaron.Context, sess session.Store) {
 		ctx.Data["LoggedIn"] = 1
 		ctx.Data["Username"] = sess.Get("user")
 		if user, err := models.GetUser(sess.Get("user").(string)); err == nil {
-			ctx.Data["User"] = user
+			if user.Suspended {
+				ctx.Data["LoggedIn"] = 0
+				sess.Set("auth", LoggedOut)
+			} else {
+				ctx.Data["User"] = user
+			}
 		} else {
 			// Let's log out the user
 			ctx.Data["LoggedIn"] = 0

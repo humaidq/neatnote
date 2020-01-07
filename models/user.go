@@ -8,14 +8,16 @@ import (
 // It keeps track of the iota, settings (such as badges), and whether they
 // have administrative privileges.
 type User struct {
-	Username    string `xorm:"pk"`
-	FullName    string `xorm:"text null"`
-	Badge       string `xorm:"text null"`
-	IsAdmin     bool   `xorm:"bool"`
-	Iota        int64
-	Created     string  `xorm:"-"`
-	CreatedUnix int64   `xorm:"created"`
-	Upvoted     []int64 // Post IDs which the user upvoted.
+	Username      string `xorm:"pk"`
+	FullName      string `xorm:"text null"`
+	Badge         string `xorm:"text null"`
+	IsAdmin       bool   `xorm:"bool"`
+	Iota          int64
+	Created       string  `xorm:"-"`
+	CreatedUnix   int64   `xorm:"created"`
+	Upvoted       []int64 // Post IDs which the user upvoted.
+	Suspended     bool    `xorm:"notnull"`
+	SuspendReason string  `xorm:"text null"`
 }
 
 // GetUser gets a user based on their username.

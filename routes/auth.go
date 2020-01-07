@@ -114,12 +114,24 @@ func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		ctx.Redirect("/verify")
 		return
 	}
-	sess.Set("auth", LoggedIn)
 	if !models.HasUser(sess.Get("user").(string)) {
 		models.AddUser(&models.User{
 			Username: sess.Get("user").(string),
 			IsAdmin:  false,
 		})
+	} else {
+		u, err := models.GetUser(sess.Get("user").(string))
+		if err != nil {
+			panic(err)
+		}
+		if u.Suspended {
+			sess.Set("auth", LoggedOut)
+			ctx.Data["SuspendReason"] = u.SuspendReason
+			ctx.HTML(200, "suspended")
+			return
+		}
 	}
+
+	sess.Set("auth", LoggedIn)
 	ctx.Redirect("/")
 }
