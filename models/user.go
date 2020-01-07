@@ -30,6 +30,7 @@ func GetUser(user string) (*User, error) {
 		return u, errors.New("User does not exist")
 	}
 	u.Created = calcDuration(u.CreatedUnix)
+	u.Iota, _ = engine.Where("poster_id = ?", u.Username).SumInt(new(Post), "iota")
 	return u, nil
 }
 
