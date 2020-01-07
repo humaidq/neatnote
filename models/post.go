@@ -58,6 +58,12 @@ func AddPost(p *Post) (err error) {
 	return err
 }
 
+// DeletePost deletes a post from the database.
+func DeletePost(id string) (err error) {
+	_, err = engine.Id(id).Delete(&Post{})
+	return
+}
+
 // GetAllUserPosts returns all of the post created by a specific user.
 func GetAllUserPosts(user string) (p []Post, err error) {
 	err = engine.Where("poster_id = ?", user).Find(&p)

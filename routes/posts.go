@@ -493,3 +493,83 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
+
+func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login first.")
+		ctx.Redirect("/login")
+		return
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !u.IsAdmin {
+		f.Error("You may not delete this comment.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	_, err = models.GetComment(ctx.Params("id"))
+	if err != nil {
+		f.Error("Comment does not exist.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	err = models.DeleteComment(ctx.Params("id"))
+	if err != nil {
+		f.Error("Failed to remove comment.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	f.Success("Comment removed successfully.")
+
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Params("post")))
+}
+
+func DeletePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
+	ctxInit(ctx, sess)
+	if sess.Get("auth") != LoggedIn {
+		f.Error("Please login first.")
+		ctx.Redirect("/login")
+		return
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !u.IsAdmin {
+		f.Error("You may not delete this post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	_, err = models.GetPost(ctx.Params("post"))
+	if err != nil {
+		f.Error("Post does not exist.")
+		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		return
+	}
+
+	err = models.DeletePost(ctx.Params("post"))
+	if err != nil {
+		f.Error("Failed to remove post.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	f.Success("Post removed successfully.")
+
+	ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+}

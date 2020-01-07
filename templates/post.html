@@ -11,13 +11,14 @@
 	<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/reveal">[reveal]</a>{{end}}
 	{{if or .User.IsAdmin (eq .Post.PosterID .User.Username)}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/edit">
 	[edit]</a>{{end}}{{end}}
+	{{if .User.IsAdmin}}<a href="/course/{{.Post.CourseCode}}/{{.Post.PostID}}/del">[delete]</a>{{end}}
 	</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	<h3 id="comments">Comments</h3>
 	{{if not .Locked}}<form method="post">
 		<div>
-			 <textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
-			 placeholder="Markdown, HTML, and LaTeX Math supported">{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
+			<textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
+			placeholder="Markdown, HTML, and LaTeX Math supported">{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
 		</div>
 		<br>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
@@ -25,12 +26,13 @@
 	</form>
 	<br>{{end}}
 	{{range .Post.Comments}}
+	
 	<p id="c-{{.CommentID}}"><small class="sgrey">Comment by
-	{{if eq	$.Post.PosterID	.Poster.Username}}{{$.Poster}}{{else}}
+	{{if eq $.Post.PosterID .Poster.Username}}{{$.Poster}}{{else}}
 	{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
 	{{if $.Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
 	{{else if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
-	{{if $.LoggedIn}}{{if or (eq .Poster.Username $.User.Username) $.User.IsAdmin}} <a href="/del/{{.CommentID}}">[delete]</a>{{end}}{{end}}</small></p>
+	{{if and $.LoggedIn $.User.IsAdmin}}<a href="/course/{{$.Post.CourseCode}}/{{$.Post.PostID}}/del/{{.CommentID}}">[delete]</a>{{end}}</small></p>
 	<div class="comment">{{.FormattedText}}</div>
 	{{end}}
 </div>

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/hako/durafmt"
 	"html/template"
 	"time"
@@ -49,4 +50,23 @@ func (c *Comment) LoadCreated() (err error) {
 func AddComment(c *Comment) (err error) {
 	_, err = engine.Insert(c)
 	return err
+}
+
+// GetComment gets a comment based on the ID.
+// It will return the pointer to the Comment, and whether there was an error.
+func GetComment(id string) (*Comment, error) {
+	c := new(Comment)
+	has, err := engine.ID(id).Get(c)
+	if err != nil {
+		return c, err
+	} else if !has {
+		return c, errors.New("Comment does not exist")
+	}
+	return c, nil
+}
+
+// DeleteComment deletes a comment from the database.
+func DeleteComment(id string) (err error) {
+	_, err = engine.Id(id).Delete(&Comment{})
+	return
 }

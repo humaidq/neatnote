@@ -93,6 +93,8 @@ func start(clx *cli.Context) (err error) {
 			m.Get("/upvote", routes.UpvotePostHandler)
 			m.Get("/edit", routes.EditPostHandler)
 			m.Post("/edit", routes.PostEditPostHandler)
+			m.Get("/del/:id", routes.DeleteCommentHandler)
+			m.Get("/del", routes.DeletePostHandler)
 		})
 	})
 
