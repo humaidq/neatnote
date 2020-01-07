@@ -18,6 +18,7 @@ func main() {
 		Version: VERSION,
 		Commands: []*cli.Command{
 			cmd.CmdStart,
+			cmd.CmdSetAdmin,
 		},
 	}
 
