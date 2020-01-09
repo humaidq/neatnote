@@ -21,34 +21,36 @@ var (
 
 // Configuration represents the configuration file format.
 type Configuration struct {
-	SiteName        string
-	SitePort        string
-	DevMode         bool
-	UniEmailDomain  string
-	EmailAddress    string
-	EmailPassword   string
-	EmailSMTPServer string
-	DBConfig        DatabaseConfiguration
-	Badges          []string
+	SiteName        string                // SiteName is the name of the site.
+	SitePort        string                // SitePort is the port to run the web server on.
+	DevMode         bool                  // DevMode is whether to disable authentication for development.
+	UniEmailDomain  string                // UniEmailDomain is the university domain for login.
+	EmailAddress    string                // EmailAddress is the email address which sends the OTPs.
+	EmailPassword   string                // EmailPassword is the password of the email used to send OTPs.
+	EmailSMTPServer string                // EmailSMTPServer is the SMTP server including the port.
+	DBConfig        DatabaseConfiguration // DBConfig is the database configuration.
+	Badges          []string              // Badges is the available badges which the users can use.
 }
 
 // DBType represents the type of the database driver which will be used.
 type DBType int
 
 const (
+	// MySQL indicates to use the MySQL database driver.
 	MySQL = iota
+	// SQLite indicates to use the SQLite database driver.
 	SQLite
 )
 
 // DatabaseConfiguration represents the general database configuration for all
 // database drivers.
 type DatabaseConfiguration struct {
-	Type     DBType
-	Host     string
-	Name     string
-	User     string
-	Password string
-	Path     string
+	Type     DBType // Type refers to which database driver to use.
+	Host     string // Host refers to the host of the database (MySQL only).
+	Name     string // Name refers to the name of the database (MySQL only).
+	User     string // User refers to the user of the database (MySQL only).
+	Password string // Password refers to the database passsword (MySQL only).
+	Path     string // Path refers to the database file path (SQLite only).
 }
 
 func newConfig() Configuration {
