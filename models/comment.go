@@ -52,6 +52,12 @@ func AddComment(c *Comment) (err error) {
 	return err
 }
 
+// UpdateComment updates a comment in the database.
+func UpdateComment(c *Comment) (err error) {
+	_, err = engine.Id(c.CommentID).Update(c)
+	return
+}
+
 // GetComment gets a comment based on the ID.
 // It will return the pointer to the Comment, and whether there was an error.
 func GetComment(id string) (*Comment, error) {

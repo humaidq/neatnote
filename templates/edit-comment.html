@@ -1,0 +1,18 @@
+{{template "base/head" .}}
+<div class="content">
+	{{template "partials/flash" .}}
+	<h2>Edit your comment</h2>
+	<form method="post">
+		<div>
+			<textarea name="text" cols="40" rows="8"
+				required="1">{{.Comment.Text}}</textarea>
+		</div>
+		<br />
+		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
+		<p><button type="submit" class="btn">Submit changes</button>
+		<a class="btn btn-danger" href="/course/{{.Post.CourseCode}}">Discard
+		changes</a></p>
+	</form>
+</div>
+{{template "base/footer" .}}
+

@@ -43,6 +43,14 @@ func start(clx *cli.Context) (err error) {
 		IndentJSON: true,
 	}))
 
+	if settings.Config.DevMode {
+		fmt.Println("In development mode.")
+		macaron.Env = macaron.DEV
+	} else {
+		fmt.Println("In production mode.")
+		macaron.Env = macaron.PROD
+	}
+
 	m.Use(cache.Cacher())
 	sessOpt := session.Options{
 		CookieLifeTime: 15778800, // 6 months
@@ -101,6 +109,10 @@ func start(clx *cli.Context) (err error) {
 				routes.EditPostHandler)
 			m.Post("/edit", routes.RequireLogin, routes.PostUnlocked,
 				routes.PostEditPostHandler)
+			m.Get("/edit/:id", routes.RequireLogin, routes.PostUnlocked,
+				routes.EditCommentHandler)
+			m.Post("/edit/:id", routes.RequireLogin, routes.PostUnlocked,
+				routes.PostEditCommentHandler)
 			m.Group("/", func() {
 				m.Get("/del/:id", routes.PostUnlocked,
 					routes.DeleteCommentHandler)

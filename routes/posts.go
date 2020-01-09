@@ -57,14 +57,79 @@ func RevealPosterHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		ctx.Params("post")))
 }
 
+// EditCommentHandler response for a post page.
+func EditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	comment, err := models.GetComment(ctx.Params("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	ctx.Data["Comment"] = comment
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
+		f.Error("You may not edit this comment.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+
+	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.HTML(200, "edit-comment")
+}
+
+// PostEditCommentHandler post response for editing a post.
+func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	comment, err := models.GetComment(ctx.Params("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	u, err := models.GetUser(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
+	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
+		f.Error("You may not edit this comment.")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
+	}
+	text := ctx.QueryTrim("text")
+
+	if getMarkdownLength(ctx.QueryTrim("text")) < 2 {
+		f.Error("The comment is empty or too short!")
+		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit/%s", ctx.Params("course"),
+			ctx.Params("post"), ctx.Params("id")))
+		return
+	}
+
+	err = models.UpdateComment(&models.Comment{
+		CommentID: comment.CommentID,
+		Text:      text,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	f.Success("Post updated successfully.")
+	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Params("post")))
+}
+
 // EditPostHandler response for a post page.
 func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	course, _ := models.GetCourse(ctx.Params("course"))
-	post, _ := models.GetPost(ctx.Params("post"))
+	post, err := models.GetPost(ctx.Params("post"))
+	if err != nil {
+		panic(err)
+	}
 
 	ctx.Data["Course"] = course
 	ctx.Data["Post"] = post
-	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
 
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
@@ -89,12 +154,10 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 
 // PostEditPostHandler post response for editing a post.
 func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	course, _ := models.GetCourse(ctx.Params("course"))
-	post, _ := models.GetPost(ctx.Params("post"))
-
-	ctx.Data["Course"] = course
-	ctx.Data["Post"] = post
-	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
+	post, err := models.GetPost(ctx.Params("post"))
+	if err != nil {
+		panic(err)
+	}
 
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {

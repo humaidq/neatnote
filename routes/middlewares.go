@@ -39,7 +39,9 @@ func PostExists(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 // CourseUnlocked is a per-route middleware which checks if the course is
 // unlocked, otherwise display an error.
 func CourseUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	if c, _ := models.GetCourse(ctx.Params("course")); c.Locked {
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
+		panic(err)
+	} else if c.Locked {
 		f.Error("This course is locked.")
 		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
 		return
@@ -49,13 +51,17 @@ func CourseUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) 
 // PostUnlocked is a per-route middleware which checks if the course and post
 // is unlocked, otherwise display an error.
 func PostUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	if c, _ := models.GetCourse(ctx.Params("course")); c.Locked {
+	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
+		panic(err)
+	} else if c.Locked {
 		f.Error("You cannot do that as the course is locked.")
 		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
-	if post, _ := models.GetPost(ctx.Params("post")); post.Locked {
+	if post, err := models.GetPost(ctx.Params("post")); err != nil {
+		panic(err)
+	} else if post.Locked {
 		f.Error("You cannot do that as the post is locked.")
 		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
