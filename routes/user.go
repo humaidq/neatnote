@@ -6,17 +6,10 @@ import (
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	macaron "gopkg.in/macaron.v1"
-	"net/http"
 )
 
 // ProfileHandler response for the profile page.
 func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before editing your profile.")
-		ctx.Redirect("/login", http.StatusUnauthorized)
-		return
-	}
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "profile")
 }
@@ -32,12 +25,6 @@ func containsStringArray(a []string, s string) bool {
 
 // PostProfileHandler post response for the profile page.
 func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before editing your profile.")
-		ctx.Redirect("/login", http.StatusUnauthorized)
-		return
-	}
 	fname := ctx.QueryTrim("fullname")
 
 	if !simpleTextExp.Match([]byte(fname)) || len(fname) > 32 || len(fname) < 1 {
@@ -77,13 +64,6 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 
 // PostDataHandler post response for requesting data (GDPR compliance).
 func PostDataHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before editing your profile.")
-		ctx.Redirect("/login", http.StatusUnauthorized)
-		return
-	}
-
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
 		panic(err)

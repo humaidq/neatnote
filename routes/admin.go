@@ -9,49 +9,12 @@ import (
 
 // AdminAddCourseHandler response for adding a new course.
 func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("You are not authorised to do that!")
-		ctx.Redirect("/login")
-		return
-	}
-
-	user, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-
-	if !user.IsAdmin {
-		f.Error("You are not authorised to do that!")
-		ctx.Redirect("/")
-		return
-	}
-
 	ctx.Data["csrf_token"] = x.GetToken()
-
 	ctx.HTML(200, "admin/add-course")
 }
 
 // AdminPostAddCourseHandler post response for adding a new course.
 func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("You are not authorised to do that!")
-		ctx.Redirect("/login")
-		return
-	}
-
-	user, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-
-	if !user.IsAdmin {
-		f.Error("You are not authorised to do that!")
-		ctx.Redirect("/")
-		return
-	}
-
 	courseCode := ctx.QueryTrim("coursecode")
 	courseName := ctx.QueryTrim("coursename")
 

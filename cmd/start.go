@@ -60,44 +60,55 @@ func start(clx *cli.Context) (err error) {
 	m.Use(session.Sessioner(sessOpt))
 	m.Use(csrf.Csrfer())
 	m.Use(captcha.Captchaer())
+	m.Use(routes.ContextInit())
 
 	// Web routes
 	m.Get("/", routes.HomepageHandler)
-	m.Get("/profile", routes.ProfileHandler)
-	m.Post("/profile", csrf.Validate, routes.PostProfileHandler)
-	m.Post("/profile/data.json", csrf.Validate, routes.PostDataHandler)
+	m.Group("/profile", func() {
+		m.Get("/", routes.ProfileHandler)
+		m.Post("/", csrf.Validate, routes.PostProfileHandler)
+		m.Post("/data.json", csrf.Validate, routes.PostDataHandler)
+	}, routes.RequireLogin)
 	m.Get("/qna", routes.QnAHandler)
 	m.Get("/guidelines", routes.GuidelinesHandler)
 
 	// Login and verification
 	m.Get("/login", routes.LoginHandler)
 	m.Post("/login", csrf.Validate, routes.PostLoginHandler)
-	m.Get("/logout", routes.LogoutHandler)
 	m.Get("/verify", routes.VerifyHandler)
 	m.Post("/verify", csrf.Validate, routes.PostVerifyHandler)
 	m.Post("/cancel", csrf.Validate, routes.CancelHandler)
+	m.Get("/logout", routes.RequireLogin, routes.LogoutHandler)
 
 	m.Group("/admin", func() {
 		m.Get("/add_course", routes.AdminAddCourseHandler)
 		m.Post("/add_course", csrf.Validate, routes.AdminPostAddCourseHandler)
-	})
+	}, routes.RequireLogin, routes.RequireAdmin)
 
 	m.Group("/course/:course", func() {
 		m.Get("/", routes.CourseHandler)
 		m.Get("/:sort(new|top)", routes.CourseHandler)
-		m.Get("/post", routes.CreatePostHandler)
-		m.Post("/post", csrf.Validate, routes.PostCreatePostHandler)
+		m.Get("/post", routes.RequireLogin, routes.CourseUnlocked,
+			routes.CreatePostHandler)
+		m.Post("/post", routes.RequireLogin, routes.CourseUnlocked,
+			csrf.Validate, routes.PostCreatePostHandler)
 		m.Group("/:post", func() {
 			m.Get("/", routes.PostPageHandler)
 			m.Post("/", csrf.Validate, routes.PostCommentPostHandler)
-			m.Get("/upvote", routes.UpvotePostHandler)
-			m.Get("/edit", routes.EditPostHandler)
-			m.Post("/edit", routes.PostEditPostHandler)
-			m.Get("/del/:id", routes.DeleteCommentHandler)
-			m.Get("/del", routes.DeletePostHandler)
-			m.Get("/reveal", routes.RevealPosterHandler)
-		})
-	})
+			m.Get("/upvote", routes.RequireLogin, routes.PostUnlocked,
+				routes.UpvotePostHandler)
+			m.Get("/edit", routes.RequireLogin, routes.PostUnlocked,
+				routes.EditPostHandler)
+			m.Post("/edit", routes.RequireLogin, routes.PostUnlocked,
+				routes.PostEditPostHandler)
+			m.Group("/", func() {
+				m.Get("/del/:id", routes.PostUnlocked,
+					routes.DeleteCommentHandler)
+				m.Get("/del", routes.PostUnlocked, routes.DeletePostHandler)
+				m.Get("/reveal", routes.RevealPosterHandler)
+			}, routes.RequireLogin, routes.RequireAdmin)
+		}, routes.PostExists)
+	}, routes.CourseExists)
 
 	log.Printf("Starting web server on port %s\n", settings.Config.SitePort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", settings.Config.SitePort), m))

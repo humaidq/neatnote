@@ -30,14 +30,7 @@ var (
 
 // CourseHandler response for a course page.
 func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-
-	course, err := models.GetCourse(ctx.Params("course"))
-	if err != nil {
-		f.Error("Welp! The course doesn't exist.")
-		ctx.Redirect("/")
-		return
-	}
+	course, _ := models.GetCourse(ctx.Params("course"))
 
 	course.LoadPosts()
 	if ctx.Params("sort") == "top" {
@@ -53,76 +46,25 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 
 // ReveaPosterHandler response for revealing the user.
 func RevealPosterHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login first.")
-		ctx.Redirect("/login")
-		return
-	}
-
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-	if !u.IsAdmin {
-		f.Error("You may not do that.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
-
-	var p *models.Post
-	p, err = models.GetPost(ctx.Params("post"))
-	if err != nil {
-		f.Error("Post does not exist.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
-	var poster *models.User
-	poster, err = models.GetUser(p.PosterID)
+	p, _ := models.GetPost(ctx.Params("post"))
+	poster, err := models.GetUser(p.PosterID)
 	if err != nil {
 		panic(err)
 	}
 
 	f.Info(fmt.Sprintf("User: %s (%s)", poster.FullName, poster.Username))
-
 	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
 // EditPostHandler response for a post page.
 func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you comment!")
-		ctx.Redirect("/login")
-		return
-	}
-
-	course, err := models.GetCourse(ctx.Params("course"))
-	if err != nil {
-		f.Error("Welp! The course no longer exists.")
-		ctx.Redirect("/")
-		return
-	}
+	course, _ := models.GetCourse(ctx.Params("course"))
+	post, _ := models.GetPost(ctx.Params("post"))
 
 	ctx.Data["Course"] = course
-
-	var post *models.Post
-	post, err = models.GetPost(ctx.Params("post"))
-	if err != nil {
-		panic(err)
-	}
 	ctx.Data["Post"] = post
-
 	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
-	if post.Locked || course.Locked {
-		f.Error("This post/course is locked from editing.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
 
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
@@ -145,37 +87,14 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	ctx.HTML(200, "edit-post")
 }
 
+// PostEditPostHandler post response for editing a post.
 func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you comment!")
-		ctx.Redirect("/login")
-		return
-	}
-
-	course, err := models.GetCourse(ctx.Params("course"))
-	if err != nil {
-		f.Error("Welp! The course no longer exists.")
-		ctx.Redirect("/")
-		return
-	}
+	course, _ := models.GetCourse(ctx.Params("course"))
+	post, _ := models.GetPost(ctx.Params("post"))
 
 	ctx.Data["Course"] = course
-
-	var post *models.Post
-	post, err = models.GetPost(ctx.Params("post"))
-	if err != nil {
-		panic(err)
-	}
 	ctx.Data["Post"] = post
-
 	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
-	if post.Locked || course.Locked {
-		f.Error("This post/course is locked from editing.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
 
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
@@ -224,22 +143,10 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 
 // PostPageHandler response for a post page.
 func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-
-	course, err := models.GetCourse(ctx.Params("course"))
-	if err != nil {
-		f.Error("Welp! The course no longer exists.")
-		ctx.Redirect("/")
-		return
-	}
+	course, _ := models.GetCourse(ctx.Params("course"))
+	post, _ := models.GetPost(ctx.Params("post"))
 
 	ctx.Data["Course"] = course
-
-	var post *models.Post
-	post, err = models.GetPost(ctx.Params("post"))
-	if err != nil {
-		panic(err)
-	}
 	post.LoadComments()
 	ctx.Data["Post"] = post
 
@@ -308,39 +215,7 @@ func markdownToHTML(s string) string {
 
 // PostCommentPostHandler post response for posting a comment to a post.
 func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you comment!")
-		ctx.Redirect("/login")
-		return
-	}
-
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
-
-	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
-		f.Error("Welp! The course doesn't exist.")
-		ctx.Redirect("/")
-		return
-	} else if c.Locked {
-		f.Error("This course is locked and you cannot comment on a post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
-
-	post, err := models.GetPost(ctx.Params("post"))
-	if err != nil {
-		f.Error("Welp! The post no longer exists!")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
-	if post.Locked {
-		f.Error("Comment cannot be posted as it has been locked.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
 
 	if getMarkdownLength(ctx.QueryTrim("text")) < 2 {
 		f.Error("The post is empty or too short!")
@@ -356,7 +231,7 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 		Text:     ctx.QueryTrim("text"),
 	}
 
-	err = models.AddComment(com)
+	err := models.AddComment(com)
 
 	if err != nil {
 		panic(err)
@@ -368,22 +243,6 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 
 // CreatePostHandler response for creating a new post.
 func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you create a post!")
-		ctx.Redirect("/login")
-		return
-	}
-	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
-		f.Error("Welp! The course no longer exist.")
-		ctx.Redirect("/")
-		return
-	} else if c.Locked {
-		f.Error("This course is locked and you cannot create a post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
 	if sess.Get("p.title") != nil && len(sess.Get("p.title").(string)) > 0 {
 		ctx.Data["ptitle"] = sess.Get("p.title").(string)
 		ctx.Data["ptext"] = sess.Get("p.text").(string)
@@ -403,23 +262,6 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f 
 
 // PostCreatePostHandler post response for creating a new post.
 func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you create a post!")
-		ctx.Redirect("/login")
-		return
-	}
-
-	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
-		f.Error("Welp! The course doesn't exist.")
-		ctx.Redirect("/")
-		return
-	} else if c.Locked {
-		f.Error("This course is locked and you cannot create a post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
 	title := ctx.QueryTrim("title")
 	text := ctx.Query("text")
 
@@ -471,39 +313,7 @@ func getMarkdownLength(s string) int {
 
 // UpvotePostHandler post response for posting a comment to a post.
 func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login before you comment!")
-		ctx.Redirect("/login")
-		return
-	}
-
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
-
-	if c, err := models.GetCourse(ctx.Params("course")); err != nil {
-		f.Error("Welp! The course doesn't exist.")
-		ctx.Redirect("/")
-		return
-	} else if c.Locked {
-		f.Error("This course is locked and you cannot comment on a post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
-
-	post, err := models.GetPost(ctx.Params("post"))
-	if err != nil {
-		f.Error("Welp! The post no longer exists!")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
-	if post.Locked {
-		f.Error("Comment cannot be posted as it has been locked.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
 
 	u, err := models.GetUser(sess.Get("user").(string))
 	if err != nil {
@@ -536,25 +346,7 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 
 // DeleteCommentHandler response for deleting a comment.
 func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login first.")
-		ctx.Redirect("/login")
-		return
-	}
-
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-	if !u.IsAdmin {
-		f.Error("You may not delete this comment.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
-
-	_, err = models.GetComment(ctx.Params("id"))
+	_, err := models.GetComment(ctx.Params("id"))
 	if err != nil {
 		f.Error("Comment does not exist.")
 		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
@@ -578,32 +370,7 @@ func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.F
 
 // DeletePostHandler response for deleting a post.
 func DeletePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
-	if sess.Get("auth") != LoggedIn {
-		f.Error("Please login first.")
-		ctx.Redirect("/login")
-		return
-	}
-
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-	if !u.IsAdmin {
-		f.Error("You may not delete this post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
-			ctx.Params("post")))
-		return
-	}
-
-	_, err = models.GetPost(ctx.Params("post"))
-	if err != nil {
-		f.Error("Post does not exist.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
-		return
-	}
-
-	err = models.DeletePost(ctx.Params("post"))
+	err := models.DeletePost(ctx.Params("post"))
 	if err != nil {
 		f.Error("Failed to remove post.")
 		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
@@ -612,6 +379,5 @@ func DeletePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 	}
 
 	f.Success("Post removed successfully.")
-
 	ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
 }

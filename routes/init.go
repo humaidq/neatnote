@@ -17,34 +17,35 @@ const (
 	LoggedIn
 )
 
-// ctxInit initialises the context using the session for every page.
-// This handles verifying the login status and setting some global
-// template variables.
-func ctxInit(ctx *macaron.Context, sess session.Store) {
-	ctx.Data["PageStartTime"] = time.Now()
-	if sess.Get("auth") == nil {
-		sess.Set("auth", LoggedOut)
-	}
-	if sess.Get("auth") == LoggedIn {
-		ctx.Data["LoggedIn"] = 1
-		ctx.Data["Username"] = sess.Get("user")
-		if user, err := models.GetUser(sess.Get("user").(string)); err == nil {
-			if user.Suspended {
-				ctx.Data["LoggedIn"] = 0
-				sess.Set("auth", LoggedOut)
-			} else {
-				ctx.Data["User"] = user
-			}
-		} else {
-			// Let's log out the user
-			ctx.Data["LoggedIn"] = 0
+// ContextInit is a middleware which initialises some global variables, and
+// verifies the login status.
+func ContextInit() macaron.Handler {
+	return func(ctx *macaron.Context, sess session.Store) {
+		ctx.Data["PageStartTime"] = time.Now()
+		if sess.Get("auth") == nil {
 			sess.Set("auth", LoggedOut)
 		}
+		if sess.Get("auth") == LoggedIn {
+			ctx.Data["LoggedIn"] = 1
+			ctx.Data["Username"] = sess.Get("user")
+			if user, err := models.GetUser(sess.Get("user").(string)); err == nil {
+				if user.Suspended {
+					ctx.Data["LoggedIn"] = 0
+					sess.Set("auth", LoggedOut)
+				} else {
+					ctx.Data["User"] = user
+				}
+			} else {
+				// Let's log out the user
+				ctx.Data["LoggedIn"] = 0
+				sess.Set("auth", LoggedOut)
+			}
+		}
+		ctx.Data["UniEmailDomain"] = settings.Config.UniEmailDomain
+		if settings.Config.DevMode {
+			ctx.Data["DevMode"] = 1
+		}
+		ctx.Data["AvailableBadges"] = append(settings.Config.Badges, "None")
+		ctx.Data["SiteTitle"] = settings.Config.SiteName
 	}
-	ctx.Data["UniEmailDomain"] = settings.Config.UniEmailDomain
-	if settings.Config.DevMode {
-		ctx.Data["DevMode"] = 1
-	}
-	ctx.Data["AvailableBadges"] = append(settings.Config.Badges, "None")
-	ctx.Data["SiteTitle"] = settings.Config.SiteName
 }

@@ -15,11 +15,6 @@ import (
 
 // LogoutHandler response for logging out.
 func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	if sess.Get("auth") != LoggedIn {
-		f.Info("You are already logged out!")
-		ctx.Redirect("/")
-		return
-	}
 	sess.Set("auth", LoggedOut)
 	//sess.Flush()
 	ctx.Redirect("/")
@@ -27,7 +22,6 @@ func LogoutHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 
 // LoginHandler response for logging in page.
 func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
 		ctx.Redirect("/verify")
 		return
@@ -42,7 +36,6 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *sess
 
 // PostLoginHandler post response for login page.
 func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
 	if sess.Get("auth") == Verification {
 		f.Warning("You need to verify before you continue.")
 		ctx.Redirect("/verify")
@@ -73,7 +66,6 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 
 // VerifyHandler response for verification page.
 func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
 		return
@@ -89,7 +81,6 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *ses
 
 // CancelHandler post response for canceling verification.
 func CancelHandler(ctx *macaron.Context, sess session.Store) {
-	ctxInit(ctx, sess)
 	if sess.Get("auth") != Verification {
 		ctx.Redirect("/login")
 		return
@@ -101,7 +92,6 @@ func CancelHandler(ctx *macaron.Context, sess session.Store) {
 
 // PostVerifyHandler post reponse for verification.
 func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	ctxInit(ctx, sess)
 	if sess.Get("auth") == LoggedOut {
 		ctx.Redirect("/login")
 		return
