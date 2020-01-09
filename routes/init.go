@@ -20,7 +20,7 @@ const (
 // ContextInit is a middleware which initialises some global variables, and
 // verifies the login status.
 func ContextInit() macaron.Handler {
-	return func(ctx *macaron.Context, sess session.Store) {
+	return func(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 		ctx.Data["PageStartTime"] = time.Now()
 		if sess.Get("auth") == nil {
 			sess.Set("auth", LoggedOut)
@@ -32,6 +32,9 @@ func ContextInit() macaron.Handler {
 				if user.Suspended {
 					ctx.Data["LoggedIn"] = 0
 					sess.Set("auth", LoggedOut)
+					f.Error("You have been logged as your account has been suspended.")
+					ctx.Redirect("/login")
+					return
 				} else {
 					ctx.Data["User"] = user
 				}
@@ -39,6 +42,7 @@ func ContextInit() macaron.Handler {
 				// Let's log out the user
 				ctx.Data["LoggedIn"] = 0
 				sess.Set("auth", LoggedOut)
+				f.Warning("You have been logged out.")
 			}
 		}
 		ctx.Data["UniEmailDomain"] = settings.Config.UniEmailDomain
