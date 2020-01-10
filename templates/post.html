@@ -33,7 +33,7 @@
 	{{if $.Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
 	{{else if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{.Created}} ago
 	{{if and $.LoggedIn $.User.IsAdmin}}<a href="/course/{{$.Post.CourseCode}}/{{$.Post.PostID}}/del/{{.CommentID}}">[delete]</a>{{end}}
-	{{if or (and $.LoggedIn $.User.IsAdmin) (eq $.User.Username	.Poster.Username)}}<a href="/course/{{$.Post.CourseCode}}/{{$.Post.PostID}}/edit/{{.CommentID}}">[edit]</a>{{end}}
+	{{if $.LoggedIn}}{{if or $.User.IsAdmin (eq $.User.Username .Poster.Username)}}<a href="/course/{{$.Post.CourseCode}}/{{$.Post.PostID}}/edit/{{.CommentID}}">[edit]</a>{{end}}{{end}}
 	</small></p>
 	<div class="comment">{{.FormattedText}}</div>
 	{{end}}
