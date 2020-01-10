@@ -10,7 +10,7 @@
 		<br />
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<p><button type="submit" class="btn">Submit changes</button>
-		<a class="btn btn-danger" href="/course/{{.Post.CourseCode}}">Discard
+		<a class="btn btn-danger" href="/c/{{.Post.CourseCode}}/{{.Post.PostID}}">Discard
 		changes</a></p>
 	</form>
 </div>

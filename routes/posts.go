@@ -57,7 +57,7 @@ func RevealPosterHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 	}
 
 	f.Info(fmt.Sprintf("User: %s (%s)", poster.FullName, poster.Username))
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
@@ -76,7 +76,7 @@ func EditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f
 	}
 	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this comment.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -99,7 +99,7 @@ func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 	}
 	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this comment.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -107,7 +107,7 @@ func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 
 	if getMarkdownLength(ctx.QueryTrim("text")) < 2 {
 		f.Error("The comment is empty or too short!")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s/edit/%s", ctx.Params("course"),
 			ctx.Params("post"), ctx.Params("id")))
 		return
 	}
@@ -121,7 +121,7 @@ func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 	}
 
 	f.Success("Post updated successfully.")
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
@@ -142,7 +142,7 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	}
 	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -171,7 +171,7 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 	}
 	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -183,7 +183,7 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		// Pass over the text and title to errored page
 		sess.Set("p.title", title)
 		sess.Set("p.text", text)
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s/edit", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	} else if getMarkdownLength(text) < 8 {
@@ -191,7 +191,7 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		// Pass over the text and title to errored page
 		sess.Set("p.title", title)
 		sess.Set("p.text", text)
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s/edit", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s/edit", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -206,7 +206,7 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 	}
 
 	f.Success("Post updated successfully.")
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
@@ -291,7 +291,7 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 		f.Error("The post is empty or too short!")
 		// Pass over the text and title to errored page
 		sess.Set("c.text", ctx.QueryTrim("text"))
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"), ctx.Params("post")))
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"), ctx.Params("post")))
 		return
 	}
 
@@ -307,7 +307,7 @@ func PostCommentPostHandler(ctx *macaron.Context, sess session.Store, f *session
 		panic(err)
 	}
 
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s#c-%d", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s#c-%d", ctx.Params("course"),
 		ctx.Params("post"), com.CommentID))
 }
 
@@ -341,14 +341,14 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.
 		// Pass over the text and title to errored page
 		sess.Set("p.title", title)
 		sess.Set("p.text", text)
-		ctx.Redirect(fmt.Sprintf("/course/%s/post", ctx.Params("course")))
+		ctx.Redirect(fmt.Sprintf("/c/%s/post", ctx.Params("course")))
 		return
 	} else if getMarkdownLength(text) < 8 {
 		f.Error("The post is empty or too short!")
 		// Pass over the text and title to errored page
 		sess.Set("p.title", title)
 		sess.Set("p.text", text)
-		ctx.Redirect(fmt.Sprintf("/course/%s/post", ctx.Params("course")))
+		ctx.Redirect(fmt.Sprintf("/c/%s/post", ctx.Params("course")))
 		return
 	}
 
@@ -371,7 +371,7 @@ func PostCreatePostHandler(ctx *macaron.Context, sess session.Store, f *session.
 		panic(err)
 	}
 
-	ctx.Redirect(fmt.Sprintf("/course/%s/%d", ctx.Params("course"), post.PostID))
+	ctx.Redirect(fmt.Sprintf("/c/%s/%d", ctx.Params("course"), post.PostID))
 }
 
 // getMarkdownLenngth renders the string provided, removes HTML tags and
@@ -395,7 +395,7 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		err = models.UnvotePost(sess.Get("user").(string), postID)
 		if err != nil {
 			f.Error(fmt.Sprintf("%s.", err))
-			ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 				ctx.Params("post")))
 			return
 		}
@@ -404,14 +404,14 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		err = models.UpvotePost(sess.Get("user").(string), postID)
 		if err != nil {
 			f.Error(fmt.Sprintf("%s.", err))
-			ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 				ctx.Params("post")))
 			return
 		}
 		f.Info("Post upvoted.")
 	}
 
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
@@ -420,7 +420,7 @@ func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.F
 	_, err := models.GetComment(ctx.Params("id"))
 	if err != nil {
 		f.Error("Comment does not exist.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -428,14 +428,14 @@ func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.F
 	err = models.DeleteComment(ctx.Params("id"))
 	if err != nil {
 		f.Error("Failed to remove comment.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
 
 	f.Success("Comment removed successfully.")
 
-	ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
 
@@ -444,11 +444,11 @@ func DeletePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 	err := models.DeletePost(ctx.Params("post"))
 	if err != nil {
 		f.Error("Failed to remove post.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
 
 	f.Success("Post removed successfully.")
-	ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+	ctx.Redirect(fmt.Sprintf("/c/%s", ctx.Params("course")))
 }

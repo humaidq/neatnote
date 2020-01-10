@@ -33,7 +33,7 @@ func PostExists(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	p, err := models.GetPost(ctx.Params("post"))
 	if err != nil {
 		f.Error("Post does not exist.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		ctx.Redirect(fmt.Sprintf("/c/%s", ctx.Params("course")))
 		return
 	}
 	ctx.Data["Post"] = p
@@ -46,7 +46,7 @@ func CourseUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) 
 		panic(err)
 	} else if c.Locked {
 		f.Error("This course is locked.")
-		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
+		ctx.Redirect(fmt.Sprintf("/c/%s", ctx.Params("course")))
 		return
 	}
 }
@@ -58,7 +58,7 @@ func PostUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 		panic(err)
 	} else if c.Locked {
 		f.Error("You cannot do that as the course is locked.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -66,7 +66,7 @@ func PostUnlocked(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 		panic(err)
 	} else if post.Locked {
 		f.Error("You cannot do that as the post is locked.")
-		ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 			ctx.Params("post")))
 		return
 	}
@@ -92,7 +92,7 @@ func RequireAdmin(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	if !u.IsAdmin {
 		f.Error("You may not do that.")
 		if len(ctx.Params("post")) > 0 {
-			ctx.Redirect(fmt.Sprintf("/course/%s/%s", ctx.Params("course"),
+			ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 				ctx.Params("post")))
 		} else {
 			ctx.Redirect("/")

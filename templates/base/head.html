@@ -14,8 +14,8 @@
 				<div class="nav-left">
 				<a href="/" class="nav-title"><img src="/img/icon.png"
 					class="logo" title="page loaded in {{CalcTime .PageStartTime}}ms" /> {{.SiteTitle}}{{if .DevMode}} [dev]{{end}}</a>
-				{{if .Course}}<a href="/course/{{.Course.Code}}">{{.Course.Code}}</a>{{end}}
-				{{if and .PostButton}}<a href="/course/{{.Course.Code}}/post">new post</a>{{end}}
+				{{if .Course}}<a href="/c/{{.Course.Code}}">{{.Course.Code}}</a>{{end}}
+				{{if and .PostButton}}<a href="/c/{{.Course.Code}}/post">new post</a>{{end}}
 				{{if .LoggedIn}}{{if and .User.IsAdmin .AddCourseButton}}<a href="/admin/add_course">add course</a>{{end}}{{end}}
 				</div>
 				<div class="nav-right">

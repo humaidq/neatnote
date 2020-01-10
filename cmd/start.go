@@ -93,7 +93,7 @@ func start(clx *cli.Context) (err error) {
 		m.Post("/add_course", csrf.Validate, routes.AdminPostAddCourseHandler)
 	}, routes.RequireLogin, routes.RequireAdmin)
 
-	m.Group("/course/:course", func() {
+	m.Group("/c/:course", func() {
 		m.Get("/", routes.CourseHandler)
 		m.Get("/:sort(new|top)", routes.CourseHandler)
 		m.Get("/post", routes.RequireLogin, routes.CourseUnlocked,

@@ -2,13 +2,13 @@
 <div class="content">
 	{{template "partials/flash" .}}
 	<h2>{{.Course.Name}}</h2>
-	<p>Sort by: <a href="/course/{{.Course.Code}}">hot</a> | <a
-	href="/course/{{.Course.Code}}/top">top</a> | <a
-	href="/course/{{.Course.Code}}/new">new</a></p>
+	<p>Sort by: <a href="/c/{{.Course.Code}}">hot</a> | <a
+	href="/c/{{.Course.Code}}/top">top</a> | <a
+	href="/c/{{.Course.Code}}/new">new</a></p>
 	{{range .Course.Posts}}
-	<div class="entry"><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
+	<div class="entry"><a href="/c/{{$.Course.Code}}/{{.PostID}}">{{.Title}}</a>
 	<div class="meta">
-		<p><a href="/course/{{$.Course.Code}}/{{.PostID}}">{{.Iota}}&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
+		<p><a href="/c/{{$.Course.Code}}/{{.PostID}}">{{.Iota}}&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
 		{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
 		{{.Created}} ago | {{.CommentsCount}} comments</a></p>
 	</div>
