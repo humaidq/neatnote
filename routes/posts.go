@@ -44,6 +44,7 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	if !course.Locked {
 		ctx.Data["PostButton"] = 1
 	}
+	ctx.Data["Title"] = course.Name
 	ctx.HTML(200, "course")
 }
 
@@ -81,6 +82,7 @@ func EditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f
 	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = "Edit comment"
 	ctx.HTML(200, "edit-comment")
 }
 
@@ -151,6 +153,7 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 		sess.Delete("p.text")
 	}
 
+	ctx.Data["Title"] = "Edit post"
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.HTML(200, "edit-post")
 }
@@ -255,6 +258,7 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = fmt.Sprintf("%s - %s", course.Code, post.Title)
 
 	ctx.HTML(200, "post")
 }
@@ -323,6 +327,7 @@ func CreatePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f 
 	}
 
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = "Create post"
 	ctx.HTML(200, "create-post")
 }
 

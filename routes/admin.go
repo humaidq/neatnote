@@ -10,6 +10,7 @@ import (
 // AdminAddCourseHandler response for adding a new course.
 func AdminAddCourseHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = "Add course"
 	ctx.HTML(200, "admin/add-course")
 }
 

@@ -31,6 +31,7 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *sess
 		return
 	}
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = "Login"
 	ctx.HTML(200, "login")
 }
 
@@ -76,6 +77,7 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *ses
 	}
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.Data["email"] = sess.Get("user")
+	ctx.Data["Title"] = "Verification"
 	ctx.HTML(200, "validate_login")
 }
 

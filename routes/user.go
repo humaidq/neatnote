@@ -11,6 +11,7 @@ import (
 // ProfileHandler response for the profile page.
 func ProfileHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	ctx.Data["csrf_token"] = x.GetToken()
+	ctx.Data["Title"] = "Profile"
 	ctx.HTML(200, "profile")
 }
 
