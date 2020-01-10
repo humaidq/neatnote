@@ -10,30 +10,33 @@ import (
 // CourseExists is a per-route middleware which checks if the course exists
 // in the database, otherwise display an error.
 func CourseExists(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	_, err := models.GetCourse(ctx.Params("course"))
+	c, err := models.GetCourse(ctx.Params("course"))
 	if err != nil {
 		f.Error("Welp! The course doesn't exist.")
 		ctx.Redirect("/")
 		return
 	}
+	ctx.Data["Course"] = c
 }
 
 // PostExists is a per-route middleware which checks if the course and post
 // exists in the database, otherwise display an error.
 func PostExists(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	_, err := models.GetCourse(ctx.Params("course"))
+	c, err := models.GetCourse(ctx.Params("course"))
 	if err != nil {
 		f.Error("Welp! The course doesn't exist.")
 		ctx.Redirect("/")
 		return
 	}
+	ctx.Data["Course"] = c
 
-	_, err = models.GetPost(ctx.Params("post"))
+	p, err := models.GetPost(ctx.Params("post"))
 	if err != nil {
 		f.Error("Post does not exist.")
 		ctx.Redirect(fmt.Sprintf("/course/%s", ctx.Params("course")))
 		return
 	}
+	ctx.Data["Post"] = p
 }
 
 // CourseUnlocked is a per-route middleware which checks if the course is
