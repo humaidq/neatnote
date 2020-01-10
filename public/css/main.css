@@ -48,9 +48,9 @@ a {
 }
 
 .nav {
-    padding: 5px 15px;
-	margin-top: 1em;
-	margin-bottom: 1.2em;
+  padding: 5px 15px;
+  margin-top: 1em;
+  margin-bottom: 1.2em;
 }
 
 .nav a {
@@ -102,7 +102,7 @@ code {
 }
 
 .meta p {
-	margin: 0;
+  margin: 0;
 }
 
 .meta a {
@@ -160,7 +160,7 @@ textarea:focus, input:focus {
 }
 
 .comment h1, .comment h2 {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 /* Alert */
@@ -206,7 +206,7 @@ textarea:focus, input:focus {
 }
 
 .post td {
-	padding: 8px;
+  padding: 8px;
 }
 
 .badge {
@@ -228,11 +228,11 @@ textarea:focus, input:focus {
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #202125;
-	color: #feffff;
+    color: #feffff;
   }
   .badge {
     background-color: #3c4043;
-	color: #feffff;
+    color: #feffff;
   }
   .nav-right, .meta a {
     color: #fff;
@@ -245,5 +245,10 @@ textarea:focus, input:focus {
   }
   .nav a {
     color: #cfcfcf;
+  }
+  textarea, input {
+    background-color: #434449;
+    border-color: #888;
+    color: #fff;
   }
 }
