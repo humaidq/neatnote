@@ -6,11 +6,10 @@
 	<p>Please set your display name in your <a href="/profile">profile
 	settings</a>.</p></div>{{end}}
 	<h2>Courses</h2>
-	{{if .User.IsAdmin}}<a href="/admin/add_course" class="btn">Add course</a>{{end}}
 	{{range .Courses}}
 	<div class="entry"><a href="/course/{{.Code}}">{{.Code}}: {{.Name}}</a>
 	<div class="meta">
-		<p>{{.PostsCount}} posts</p>
+		<p><a href="/course/{{.Code}}">{{.PostsCount}} posts</a></p>
 	</div>
 	</div>
 	{{end}}

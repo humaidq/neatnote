@@ -41,6 +41,9 @@ func CourseHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 		sort.Sort(models.HotPosts(course.Posts))
 	}
 	ctx.Data["Course"] = course
+	if !course.Locked {
+		ctx.Data["PostButton"] = 1
+	}
 	ctx.HTML(200, "course")
 }
 

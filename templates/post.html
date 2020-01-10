@@ -1,7 +1,6 @@
 {{template "base/head" .}}
 <div class="content">
 	{{template "partials/flash" .}}
-	<p><a href="/course/{{.Post.CourseCode}}">&lt; Go back</a></p>
 	<h2>{{.Post.Title}}</h2>
 	<p><small class="sgrey">{{.Post.Iota}}&iota; by {{.Poster}}
 	{{if .Post.Anonymous}}<span class="badge" style="font-weight:bold;">Anon</span>
