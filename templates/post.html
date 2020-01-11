@@ -14,13 +14,14 @@
 	</small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	{{if not .Locked}}<form method="post">
-		<div>
-			<textarea name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
+		<div class="col-5">
+		<div class="form-group">
+			<textarea class="form-item" name="text" cols="40" rows="4" required="1" {{if not .LoggedIn}} disabled="1"{{end}}
 			placeholder="Markdown, HTML, and LaTeX Math supported">{{if not .LoggedIn}}Login to comment.{{else if $.ctext}}{{$.ctext}}{{end}}</textarea> 
 		</div>
-		<br>
 		<input type="hidden" name="_csrf" value="{{.csrf_token}}">
 		<button type="submit" class="btn"{{if not .LoggedIn}} disabled="1"{{end}}>Comment</button>
+		</div>
 	</form>
 	<br>{{end}}
 	{{range .Post.Comments}}
