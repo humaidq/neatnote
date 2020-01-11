@@ -51,7 +51,7 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 		Badge:    badge,
 	}
 
-	err := models.UpdateUserBadge(u)
+	err := models.UpdateUserCols(u, "badge")
 	if err != nil {
 		panic(err)
 	}

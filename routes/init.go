@@ -32,9 +32,7 @@ func ContextInit() macaron.Handler {
 				if user.Suspended {
 					ctx.Data["LoggedIn"] = 0
 					sess.Set("auth", LoggedOut)
-					f.Error("You have been logged as your account has been suspended.")
-					ctx.Redirect("/login")
-					return
+					f.Warning("You have been logged out as your account has been suspended.")
 				} else {
 					ctx.Data["User"] = user
 				}

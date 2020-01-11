@@ -17,6 +17,8 @@ var (
 	ConfigPath = "config.toml"
 	// Config is where the current configuration is loaded.
 	Config Configuration
+	// StartTime is the time when the server started.
+	StartTime = time.Now()
 )
 
 // Configuration represents the configuration file format.

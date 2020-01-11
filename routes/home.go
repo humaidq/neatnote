@@ -13,7 +13,7 @@ func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash)
 		courses[i].LoadPostsCount()
 	}
 	ctx.Data["Courses"] = courses
-	ctx.Data["AddCourseButton"] = 1
+	ctx.Data["Home"] = 1
 	ctx.HTML(200, "index")
 }
 

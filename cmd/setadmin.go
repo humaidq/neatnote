@@ -46,5 +46,5 @@ func setAdmin(c *cli.Context) error {
 		return errors.New("Unknown status. Must be either true or false.")
 	}
 
-	return models.UpdateUserAdmin(u)
+	return models.UpdateUserCols(u, "is_admin")
 }

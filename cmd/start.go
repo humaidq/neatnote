@@ -89,6 +89,9 @@ func start(clx *cli.Context) (err error) {
 	m.Get("/logout", routes.RequireLogin, routes.LogoutHandler)
 
 	m.Group("/a", func() {
+		m.Get("/", routes.AdminHandler)
+		m.Post("/", csrf.Validate, routes.PostAdminHandler)
+		m.Get("/view/:user", routes.AdminViewUserHandler)
 		m.Get("/addcourse", routes.AdminAddCourseHandler)
 		m.Post("/addcourse", csrf.Validate, routes.AdminPostAddCourseHandler)
 	}, routes.RequireLogin, routes.RequireAdmin)

@@ -34,6 +34,12 @@ func GetUser(user string) (*User, error) {
 	return u, nil
 }
 
+// GetUsers returns a list of all users in the database.
+func GetUsers() (users []User) {
+	engine.Find(&users)
+	return users
+}
+
 // AddUser adds a new User to the database.
 func AddUser(u *User) (err error) {
 	_, err = engine.Insert(u)
@@ -52,15 +58,9 @@ func UpdateUser(u *User) (err error) {
 	return
 }
 
-// UpdateUserAdmin updates a user in the database including the IsAdmin field.
-func UpdateUserAdmin(u *User) (err error) {
-	_, err = engine.Id(u.Username).Cols("is_admin").Update(u)
-	return
-}
-
-// UpdateUserBadge updates a user in the database including the Badge field,
-// even if the field is empty.
-func UpdateUserBadge(u *User) (err error) {
-	_, err = engine.Id(u.Username).Cols("badge").Update(u)
-	return
+// UpdatUserCols updates a user in the database including the specified
+// columns, even if the fields are empty.
+func UpdateUserCols(u *User, cols ...string) error {
+	_, err := engine.Id(u.Username).Cols(cols...).Update(u)
+	return err
 }
