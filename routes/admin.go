@@ -22,11 +22,11 @@ func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store, f *sess
 	// Check if course exists already
 	if len(courseCode) < 1 || len(courseName) < 1 {
 		f.Error("You must specify course code and name!")
-		ctx.Redirect("/admin/add_course")
+		ctx.Redirect("/a/addcourse")
 		return
 	} else if _, err1 := models.GetCourse(courseCode); err1 == nil {
 		f.Error("Course already exists!")
-		ctx.Redirect("/admin/add_course")
+		ctx.Redirect("/a/addcourse")
 		return
 	}
 
@@ -37,5 +37,5 @@ func AdminPostAddCourseHandler(ctx *macaron.Context, sess session.Store, f *sess
 		Locked:  false,
 	})
 
-	ctx.Redirect("/?add=1")
+	ctx.Redirect("/")
 }
