@@ -11,7 +11,7 @@
 	{{if or .User.IsAdmin (eq .Post.PosterID .User.Username)}}<a href="/c/{{.Post.CourseCode}}/{{.Post.PostID}}/edit">
 	[edit]</a>{{end}}{{end}}
 	{{if .User.IsAdmin}}<a href="/c/{{.Post.CourseCode}}/{{.Post.PostID}}/del">[delete]</a>{{end}}
-	</small></p>
+	<a href="/c/{{.Post.CourseCode}}/{{.Post.PostID}}/lite">[lite/print]</a></small></p>
 	<div class="post">{{.FormattedPost}}</div>
 	{{if not .Locked}}<form method="post">
 		<div class="col-5">

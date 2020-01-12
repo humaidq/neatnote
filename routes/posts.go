@@ -213,6 +213,14 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		ctx.Params("post")))
 }
 
+// LitePostHandler response for a light post page.
+func LitePostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	post, _ := models.GetPost(ctx.Params("post"))
+	ctx.Data["FormattedPost"] = template.HTML(markdownToHTML(post.Text))
+
+	ctx.HTML(200, "post-lite")
+}
+
 // PostPageHandler response for a post page.
 func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	course, _ := models.GetCourse(ctx.Params("course"))

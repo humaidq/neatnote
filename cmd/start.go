@@ -132,6 +132,7 @@ func start(clx *cli.Context) (err error) {
 			csrf.Validate, routes.PostCreatePostHandler)
 		m.Group("/:post", func() {
 			m.Get("/", routes.PostPageHandler)
+			m.Get("/lite", routes.LitePostHandler)
 			m.Post("/", csrf.Validate, routes.PostCommentPostHandler)
 			m.Get("/upvote", routes.RequireLogin, routes.PostUnlocked,
 				routes.UpvotePostHandler)
