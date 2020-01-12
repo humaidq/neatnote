@@ -315,17 +315,32 @@ label {
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #202125;
-    color: #feffff;
+    color: #cfcfcf;
   }
-  .badge {
+  .badge, .btn {
     background-color: #3c4043;
     color: #feffff;
   }
-  .nav-right, .meta a {
-    color: #fff;
+  .alert {
+    color: #efefef;
+  }
+  .alert-grey {
+    background-color: #6f6f6f;
+  }
+  .alert-green {
+    background-color: #328732;
+  }
+  .alert-red {
+    background-color: #94282f;
+  }
+  .btn {
+    border-color: #666;
+  }
+  .nav-right, .meta a, .entry a {
+    color: #cfcfcf;
   }
   .nav-title {
-    color: #fff !important;
+    color: #cfcfcf !important;
   }
   .post table, .post th, .post td {
     border: 2px solid #4e4e4e;
@@ -335,7 +350,7 @@ label {
   }
   textarea, input {
     background-color: #434449;
-    border-color: #888;
-    color: #fff;
+    border-color: #666;
+    color: #efefef;
   }
 }
