@@ -28,8 +28,8 @@ type Course struct {
 	Name        string `xorm:"notnull text"`
 	Visible     bool   `xorm:"notnull"`
 	Locked      bool   `xorm:"notnull"`
-	PostsCount  int64  `xorm:"-"`
-	Posts       []Post `xorm:"-"`
+	PostsCount  int64  `xorm:"-" json:"-"`
+	Posts       []Post `xorm:"-" json:"-"`
 	CreatedUnix int64  `xorm:"created"`
 	UpdatedUnix int64  `xorm:"updated"`
 }

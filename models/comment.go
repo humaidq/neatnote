@@ -26,9 +26,9 @@ type Comment struct {
 	CommentID     int64         `xorm:"pk autoincr"`
 	PostID        int64         `xorm:"notnull"`
 	PosterID      string        `xorm:"notnull"`
-	Poster        *User         `xorm:"-"`
+	Poster        *User         `xorm:"-" json:"-"`
 	Text          string        `xorm:"notnull"`
-	FormattedText template.HTML `xorm:"-"`
+	FormattedText template.HTML `xorm:"-" json:"-"`
 	CreatedUnix   int64         `xorm:"created"`
 	UpdatedUnix   int64         `xorm:"updated"`
 }
@@ -74,5 +74,11 @@ func GetComment(id string) (*Comment, error) {
 // DeleteComment deletes a comment from the database.
 func DeleteComment(id string) (err error) {
 	_, err = engine.Id(id).Delete(&Comment{})
+	return
+}
+
+// GetAllUserComments returns all of the comments created by a specific user.
+func GetAllUserComments(user string) (c []Comment, err error) {
+	err = engine.Where("poster_id = ?", user).Find(&c)
 	return
 }

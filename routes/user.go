@@ -86,9 +86,14 @@ func PostDataHandler(ctx *macaron.Context, sess session.Store, f *session.Flash)
 	if err != nil {
 		panic(err)
 	}
+	c, err := models.GetAllUserComments(sess.Get("user").(string))
+	if err != nil {
+		panic(err)
+	}
 
 	ctx.JSON(200, map[string]interface{}{
-		"user":  u,
-		"posts": p,
+		"user":     u,
+		"posts":    p,
+		"comments": c,
 	})
 }

@@ -27,10 +27,10 @@ type Post struct {
 	PostID        int64     `xorm:"pk autoincr"`
 	CourseCode    string    `xorm:"text notnull"`
 	PosterID      string    `xorm:"notnull"`
-	Poster        *User     `xorm:"-"`
+	Poster        *User     `xorm:"-" json:"-"`
 	Locked        bool      `xorm:"notnull"` // Whether the comments are locked.
-	Comments      []Comment `xorm:"-"`
-	CommentsCount int64     `xorm:"-"`
+	Comments      []Comment `xorm:"-" json:"-"`
+	CommentsCount int64     `xorm:"-" json:"-"`
 	Title         string    `xorm:"text notnull"`
 	Text          string    `xorm:"text notnull"`
 	CreatedUnix   int64     `xorm:"created"`
