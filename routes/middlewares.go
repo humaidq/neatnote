@@ -36,7 +36,12 @@ func PostExists(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 		ctx.Redirect(fmt.Sprintf("/c/%s", ctx.Params("course")))
 		return
 	}
+	if p.CourseCode != c.Code {
+		ctx.Redirect(fmt.Sprintf("/c/%s/%d", p.CourseCode, p.PostID))
+		return
+	}
 	ctx.Data["Post"] = p
+
 }
 
 // CourseUnlocked is a per-route middleware which checks if the course is
