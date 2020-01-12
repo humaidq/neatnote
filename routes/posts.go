@@ -136,7 +136,6 @@ func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 		panic(err)
 	}
 
-	f.Success("Post updated successfully.")
 	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
@@ -210,7 +209,6 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		panic(err)
 	}
 
-	f.Success("Post updated successfully.")
 	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
@@ -396,7 +394,6 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 				ctx.Params("post")))
 			return
 		}
-		f.Info("You have unvoted the post.")
 	} else {
 		err := models.UpvotePost(sess.Get("user").(string), postID)
 		if err != nil {
@@ -405,7 +402,6 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 				ctx.Params("post")))
 			return
 		}
-		f.Info("Post upvoted.")
 	}
 
 	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -430,8 +426,6 @@ func DeleteCommentHandler(ctx *macaron.Context, sess session.Store, f *session.F
 		return
 	}
 
-	f.Success("Comment removed successfully.")
-
 	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
@@ -446,6 +440,5 @@ func DeletePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		return
 	}
 
-	f.Success("Post removed successfully.")
 	ctx.Redirect(fmt.Sprintf("/c/%s", ctx.Params("course")))
 }
