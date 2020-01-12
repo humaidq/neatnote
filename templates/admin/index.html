@@ -7,6 +7,7 @@
 	{{range .Users}}
 	<li>{{if not .FullName}}{{.Username}}{{else}}{{.FullName}}
 		<span class="muted-text">({{.Username}})</span>{{end}}
+		{{if .Badge}}<span class="badge">{{.Badge}}</span>{{end}}
 		<form method="post" style="display:inline;">
 		<input type="hidden" name="_csrf" value="{{$.csrf_token}}" />
 		<input type="hidden" name="action" value="{{if .Suspended}}unsuspend{{else}}suspend_prompt{{end}}" />
