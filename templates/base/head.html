@@ -20,7 +20,7 @@
 				</div>
 				<div class="nav-right">
 					{{if .LoggedIn}}
-					<a href="/profile">Logged in as {{if .User.FullName}}{{.User.FullName}}{{else}}{{.Username}}{{end}}</a>
+					<a href="/profile">Logged in as {{if .User.FullName}}{{.User.FullName}}{{else}}{{EmailToUser .Username}}{{end}}</a>
 				{{end}}
 					{{if .LoggedIn}}<a href="/logout">Logout</a>{{else}}
 					<a href="/login">Login</a>{{end}}

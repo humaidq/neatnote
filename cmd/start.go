@@ -16,6 +16,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -39,6 +40,13 @@ func start(clx *cli.Context) (err error) {
 		Funcs: []template.FuncMap{map[string]interface{}{
 			"CalcTime": func(sTime time.Time) string {
 				return fmt.Sprint(time.Since(sTime).Nanoseconds() / int64(time.Millisecond))
+			},
+			"EmailToUser": func(s string) string {
+				if strings.Contains(s, "@") {
+					return strings.Split(s, "@")[0]
+				} else {
+					return s
+				}
 			},
 			"CalcDurationShort": func(unix int64) string {
 				return durafmt.Parse(time.Now().Sub(time.Unix(unix, 0))).LimitFirstN(1).String()

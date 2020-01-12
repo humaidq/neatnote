@@ -27,7 +27,7 @@
 	{{range .Post.Comments}}
 	<div class="comment"><p id="c-{{.CommentID}}"><small class="sgrey">
 	{{if eq $.Post.PosterID .Poster.Username}}{{$.Poster}}{{else}}
-	{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
+	{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{EmailToUser .Poster.Username}}{{end}}{{end}}
 	{{if and $.Post.Anonymous (eq $.Post.PosterID .PosterID)}}<span class="badge" style="font-weight:bold;">Anon</span>
 	{{else if .Poster.Badge}}<span class="badge">{{.Poster.Badge}}</span> {{end}}{{CalcDurationShort .CreatedUnix}} ago
 	{{if and $.LoggedIn $.User.IsAdmin}}<a href="/c/{{$.Post.CourseCode}}/{{$.Post.PostID}}/del/{{.CommentID}}">[delete]</a>{{end}}
