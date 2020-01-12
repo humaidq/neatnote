@@ -1,6 +1,6 @@
 /* Page style */
 body {
-  font-family: "Source Sans Pro", "Lucidia Grande", "Segoe UI", "Roboto", sans-serif;
+  font-family: "Lucidia Grande", "Segoe UI", "Roboto", sans-serif;
   font-size: 1.2em;
   margin: 0;
   background-color: #fefefe;
@@ -210,6 +210,7 @@ label {
   margin: 15px;
   padding: 8px;
   color: #000;
+  border-radius: 5px;
 }
 
 .alert-title {
@@ -218,22 +219,18 @@ label {
 
 .alert-green {
   background-color: #a7f9a7;
-  outline: 1px solid #024702;
 }
 
 .alert-grey {
   background-color: #d7d7d7;
-  outline: 1px solid #3d3d3d;
 }
 
 .alert-yellow {
   background-color: #fcef37;
-  outline: 1px solid #9e7f06;
 }
 
 .alert-red {
   background-color: #f9a7b6;
-  outline: 1px solid #470214;
 }
 
 /* Responsive Layout */
@@ -331,7 +328,7 @@ label {
     color: #efefef;
   }
   .alert-grey {
-    background-color: #6f6f6f;
+    background-color: #3c4043;
   }
   .alert-green {
     background-color: #328732;
