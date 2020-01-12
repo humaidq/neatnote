@@ -10,7 +10,7 @@
 	<div class="meta">
 		<p><a href="/c/{{$.Course.Code}}/{{.PostID}}">{{.Iota}}&iota; by {{if .Anonymous}}<i>{{.AnonName}}</i>{{else}}
 		{{if .Poster.FullName}}{{.Poster.FullName}}{{else}}{{.Poster.Username}}{{end}}{{end}}
-		{{.Created}} ago | {{.CommentsCount}} comments</a></p>
+		{{CalcDurationShort .CreatedUnix}} ago | {{.CommentsCount}} comments</a></p>
 	</div>
 	</div>
 	{{end}}

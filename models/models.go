@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"git.sr.ht/~humaid/neatnote/modules/settings"
 	_ "github.com/go-sql-driver/mysql" // MySQL driver support
-	"github.com/hako/durafmt"
-	_ "github.com/mattn/go-sqlite3" // SQLite driver support
+	_ "github.com/mattn/go-sqlite3"    // SQLite driver support
 	"log"
-	"time"
 	"xorm.io/core"
 	"xorm.io/xorm"
 )
@@ -24,12 +22,6 @@ func init() {
 		new(Post),
 		new(Comment),
 	)
-}
-
-// calcDuration calculates the duration between two timestamps.
-// It will return a fancy formatted duration in text.
-func calcDuration(unix int64) string {
-	return durafmt.Parse(time.Now().Sub(time.Unix(unix, 0))).LimitFirstN(1).String()
 }
 
 // SetupEngine sets up an XORM engine according to the database configuration

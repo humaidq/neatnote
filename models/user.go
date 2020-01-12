@@ -13,7 +13,6 @@ type User struct {
 	Badge         string `xorm:"text null"`
 	IsAdmin       bool   `xorm:"bool"`
 	Iota          int64
-	Created       string  `xorm:"-"`
 	CreatedUnix   int64   `xorm:"created"`
 	Upvoted       []int64 // Post IDs which the user upvoted.
 	Suspended     bool    `xorm:"notnull"`
@@ -29,7 +28,6 @@ func GetUser(user string) (*User, error) {
 	} else if !has {
 		return u, errors.New("User does not exist")
 	}
-	u.Created = calcDuration(u.CreatedUnix)
 	u.Iota, _ = engine.Where("poster_id = ?", u.Username).SumInt(new(Post), "iota")
 	return u, nil
 }

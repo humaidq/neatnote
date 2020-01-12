@@ -2,9 +2,7 @@ package models
 
 import (
 	"errors"
-	"github.com/hako/durafmt"
 	"html/template"
-	"time"
 )
 
 // Comment represents a comment on a Post. It keeps track of the poster and
@@ -17,7 +15,6 @@ type Comment struct {
 	Text          string        `xorm:"notnull"`
 	FormattedText template.HTML `xorm:"-"`
 	CreatedUnix   int64         `xorm:"created"`
-	Created       string        `xorm:"-"`
 	UpdatedUnix   int64         `xorm:"updated"`
 }
 
@@ -31,18 +28,6 @@ func (c *Comment) LoadPoster() (err error) {
 	}
 
 	c.Poster, err = GetUser(c.PosterID)
-	return
-}
-
-// LoadCreated loads the created time of a comment in a non-mapped field
-// relative to the current time.
-func (c *Comment) LoadCreated() (err error) {
-	if c == nil {
-		return nil
-	}
-
-	dur := time.Now().Sub(time.Unix(c.CreatedUnix, 0))
-	c.Created = durafmt.Parse(dur).LimitFirstN(1).String()
 	return
 }
 

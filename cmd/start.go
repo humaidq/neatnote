@@ -10,6 +10,7 @@ import (
 	"github.com/go-macaron/csrf"
 	"github.com/go-macaron/session"
 	_ "github.com/go-macaron/session/mysql" // MySQL driver for persistent sessions
+	"github.com/hako/durafmt"
 	"github.com/urfave/cli/v2"
 	macaron "gopkg.in/macaron.v1"
 	"html/template"
@@ -38,6 +39,9 @@ func start(clx *cli.Context) (err error) {
 		Funcs: []template.FuncMap{map[string]interface{}{
 			"CalcTime": func(sTime time.Time) string {
 				return fmt.Sprint(time.Since(sTime).Nanoseconds() / int64(time.Millisecond))
+			},
+			"CalcDurationShort": func(unix int64) string {
+				return durafmt.Parse(time.Now().Sub(time.Unix(unix, 0))).LimitFirstN(1).String()
 			},
 		}},
 		IndentJSON: true,

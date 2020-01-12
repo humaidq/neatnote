@@ -16,7 +16,6 @@ type Course struct {
 	PostsCount  int64  `xorm:"-"`
 	Posts       []Post `xorm:"-"`
 	CreatedUnix int64  `xorm:"created"`
-	Created     string `xorm:"-"`
 	UpdatedUnix int64  `xorm:"updated"`
 }
 
@@ -49,7 +48,6 @@ func GetCourse(code string) (*Course, error) {
 	} else if !has {
 		return c, errors.New("Course does not exist")
 	}
-	c.Created = calcDuration(c.CreatedUnix)
 	return c, nil
 }
 
@@ -61,7 +59,6 @@ func (c *Course) LoadPosts() (err error) {
 	}
 	for i := range c.Posts {
 		c.Posts[i].Poster, _ = GetUser(c.Posts[i].PosterID)
-		c.Posts[i].Created = calcDuration(c.Posts[i].CreatedUnix)
 		c.Posts[i].CommentsCount, _ = engine.Where("post_id = ?", c.Posts[i].PostID).Count(new(Comment))
 	}
 	return

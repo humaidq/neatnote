@@ -19,7 +19,6 @@ type Post struct {
 	Title         string    `xorm:"text notnull"`
 	Text          string    `xorm:"text notnull"`
 	CreatedUnix   int64     `xorm:"created"`
-	Created       string    `xorm:"-"`
 	UpdatedUnix   int64     `xorm:"updated"`
 	Anonymous     bool      `xorm:"notnull"`
 	AnonName      string    `xorm:"text null"`
@@ -41,7 +40,6 @@ func GetPost(id string) (*Post, error) {
 	} else if !has {
 		return p, errors.New("Post does not exist")
 	}
-	p.Created = calcDuration(p.CreatedUnix)
 	p.Poster, _ = GetUser(p.PosterID)
 	return p, nil
 }

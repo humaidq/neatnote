@@ -227,7 +227,6 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	}
 
 	for i := range post.Comments {
-		post.Comments[i].LoadCreated()
 		post.Comments[i].LoadPoster()
 		post.Comments[i].FormattedText =
 			template.HTML(markdownToHTML(post.Comments[i].Text))
