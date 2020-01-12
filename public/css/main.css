@@ -6,6 +6,34 @@ body {
   background-color: #fefefe;
 }
 
+.container {
+  max-width: 1250px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.content {
+  padding: 20px 30px;
+}
+
+.footer {
+  font-size: 0.8rem;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Typography */
+.title {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 0 30px 0 30px
+}
+
+.footer p {
+  margin: 5px;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 10px 0;
 }
@@ -18,33 +46,20 @@ p {
   color: #8f8f8f;
 }
 
-.container {
-  max-width: 1250px;
-  position: relative;
-  margin: 0 auto;
-}
-
-.content {
-  padding: 20px 30px;
-}
-
-.post {
-  padding: 0 4vh;
-  line-height: 30px;
-  font-size: 1.2em;
-  margin: 25px 0;
-}
-
-.footer {
-  font-size: 0.8rem;
-  padding: 8px;
-  text-align: center;
-}
-
 a {
   color: inherit;
 }
 
+.muted-text {
+  color: #6f6f6f;
+  font-size: 0.9rem;
+}
+
+code {
+  white-space: pre;
+}
+
+/* Navigation */
 .nav {
   padding: 5px 15px;
   margin-top: 1em;
@@ -73,7 +88,32 @@ a {
 }
 
 .logo {
-  height: 20px;
+  height: 18px;
+}
+
+/* Content */
+.post {
+  padding: 0 4vh;
+  line-height: 30px;
+  font-size: 1.2em;
+  margin: 25px 0;
+}
+
+.comment h1, .comment h2 {
+  font-size: 1.2rem;
+}
+
+.comment img {
+  max-width: 35%;
+  max-height: 35%;
+}
+
+.comment {
+  padding: 5px 0;
+}
+
+.entry {
+  padding: 5px 15px;
 }
 
 .entry a {
@@ -84,26 +124,6 @@ a {
   text-decoration: none;
 }
 
-code {
-  white-space: pre;
-}
-
-/* Typography */
-.title {
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  padding: 0 30px 0 30px
-}
-
-.footer p {
-  margin: 5px;
-}
-
-.meta p {
-  margin: 0;
-}
-
 .meta a {
   padding: 0;
   margin: 0 0 5px 15px;
@@ -111,29 +131,31 @@ code {
   font-weight: lighter;
 }
 
-@media only screen and (max-width: 500px) {
-  .site-title {
-    display: none;
-  }
+.meta p {
+  margin: 0;
 }
 
-@media only screen and (max-width: 780px) {
-  body {
-    font-size: 1em;
-  }
-  .post {
-    padding: 0;
-    max-width: 100%;
-  }
-  p {
-    margin: 0;
-  }
-  textarea {
-    max-width: 100%;
-  }
+.badge {
+  background: #dedede;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #3f3f3f;
 }
 
+/* Tables */
+.post table {
+  border-collapse: collapse;
+}
 
+.post table, .post th, .post td {
+  border: 1px solid #000;
+}
+
+.post td {
+  padding: 8px;
+}
+
+/* Form items */
 .btn {
   display: inline-block;
   font-align: center;
@@ -147,7 +169,6 @@ code {
 .btn:focus {
   border: #888 1px solid;
 }
-
 
 .btn-danger {
   background-color: #fc4e51;
@@ -165,16 +186,25 @@ textarea:focus, input:focus {
   border: #888 1px solid;
 }
 
-.comment h1, .comment h2 {
-  font-size: 1.2rem;
+label {
+  display: inline-block;
 }
 
-.comment {
-  padding: 5px 0;
+.item-title {
+  font-weight: bold;
+}
+
+.form-item {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.form-group {
+  padding-bottom: 10px;
 }
 
 /* Alert */
-
 .alert {
   display: block;
   margin: 15px;
@@ -206,58 +236,7 @@ textarea:focus, input:focus {
   outline: 1px solid #470214;
 }
 
-/* Tables */
-.post table {
-  border-collapse: collapse;
-}
-
-.post table, .post th, .post td {
-  border: 1px solid #000;
-}
-
-.post td {
-  padding: 8px;
-}
-
-.badge {
-  background: #dedede;
-  padding: 2px 5px;
-  border-radius: 4px;
-  color: #3f3f3f;
-}
-
-.comment img {
-  max-width: 35%;
-  max-height: 35%;
-}
-
-.entry {
-  padding: 5px 15px;
-}
-
-label {
-  display: inline-block;
-}
-
-.item-title {
-  font-weight: bold;
-}
-
-.form-item {
-  display: block;
-  width: 100%;
-  margin-top: 5px;
-}
-
-.form-group {
-  padding-bottom: 10px;
-}
-
-.muted-text {
-  color: #6f6f6f;
-  font-size: 0.9rem;
-}
-
+/* Responsive Layout */
 .col-1 {
   width: 8.33%;
 }
@@ -306,12 +285,36 @@ label {
   width: 100%;
 }
 
+/* Mobile responsiveness */
+@media only screen and (max-width: 780px) {
+  body {
+    font-size: 1em;
+  }
+  .post {
+    padding: 0;
+    max-width: 100%;
+  }
+  p {
+    margin: 0;
+  }
+  textarea {
+    max-width: 100%;
+  }
+}
+
 @media only screen and (max-width: 860px) {
   [class*="col-"] {
     width: 100%;
   }
 }
 
+@media only screen and (max-width: 700px) {
+  .nav-extra {
+    display: none;
+  }
+}
+
+/* Dark theme */
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #202125;
@@ -320,6 +323,9 @@ label {
   .badge, .btn {
     background-color: #3c4043;
     color: #feffff;
+  }
+  .btn-danger {
+    background-color: #94282f;
   }
   .alert {
     color: #efefef;
