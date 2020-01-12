@@ -28,11 +28,11 @@ var (
 		"agreeable", "brave", "bright", "calm", "charming", "considerate",
 		"courageous", "creative", "decisive", "diligent", "diplomatic",
 		"discreet", "dynamic", "enthusiastic", "exuberant", "faithful",
-		"fearless", "friendly", "fearless", "funny", "generous", "gentle",
-		"gregarious", "helpful", "honest", "humorous", "imaginative",
-		"impartial", "idependent", "intellectual", "kind", "loving", "loyal",
-		"neat", "nice", "passionate", "persistent", "polite", "powerful",
-		"quiet", "rational", "reliable", "romantic", "thoughtful", "tidy"}
+		"fearless", "friendly", "funny", "generous", "gentle", "gregarious",
+		"helpful", "honest", "humorous", "imaginative", "impartial",
+		"idependent", "intellectual", "kind", "loving", "loyal", "neat",
+		"nice", "passionate", "persistent", "polite", "powerful", "quiet",
+		"rational", "reliable", "romantic", "thoughtful", "tidy"}
 
 	// NOUN is a list of nouns used in the name generator.
 	NOUN = []string{"aardvark", "albatross", "alligator", "alpaca", "ant",
