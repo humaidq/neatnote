@@ -93,7 +93,7 @@ func VerifyHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *ses
 	ctx.Data["csrf_token"] = x.GetToken()
 	ctx.Data["email"] = sess.Get("user")
 	ctx.Data["Title"] = "Verification"
-	ctx.HTML(200, "validate_login")
+	ctx.HTML(200, "verify_login")
 }
 
 // CancelHandler post response for canceling verification.
