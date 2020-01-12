@@ -13,7 +13,8 @@
 			<div class="nav">
 				<div class="nav-left">
 				<a href="/" class="nav-title"><img src="/img/icon.png"
-					class="logo" title="page loaded in {{CalcTime .PageStartTime}}ms" /> {{.SiteTitle}}{{if .DevMode}} [dev]{{end}}</a>
+					class="logo" title="page loaded in {{CalcTime .PageStartTime}}ms" />
+					<span class="site-title">{{.SiteTitle}}{{if .DevMode}} [dev]{{end}}</span></a>
 				{{if .Course}}<a href="/c/{{.Course.Code}}">{{.Course.Code}}</a>{{end}}
 				{{if .PostButton}}<a href="/c/{{.Course.Code}}/post">new post</a>{{end}}
 				{{if .LoggedIn}}{{if and .User.IsAdmin .Home}}<a href="/a">admin</a>{{end}}{{end}}
