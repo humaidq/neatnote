@@ -22,7 +22,7 @@ func AdminHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *sess
 	ctx.HTML(200, "admin/index")
 }
 
-// AdminViewUserHandler
+// AdminViewUserHandler response for viewing a user's information.
 func AdminViewUserHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	u, err := models.GetUser(ctx.Params("user"))
 	if err != nil {
@@ -30,7 +30,9 @@ func AdminViewUserHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store,
 		ctx.Redirect("/a")
 		return
 	}
-	ctx.JSON(200, u)
+	ctx.Data["VUser"] = u
+	ctx.HTML(200, "admin/view-user")
+
 }
 
 // PostAdminHandler post response for admin dashboard.
