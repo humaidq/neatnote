@@ -53,10 +53,11 @@ func RevealPosterHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 	p, _ := models.GetPost(ctx.Params("post"))
 	poster, err := models.GetUser(p.PosterID)
 	if err != nil {
-		panic(err)
+		f.Error("Post no longer exists.")
+	} else {
+		f.Info(fmt.Sprintf("User: %s (%s)", poster.FullName, poster.Username))
 	}
 
-	f.Info(fmt.Sprintf("User: %s (%s)", poster.FullName, poster.Username))
 	ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
 		ctx.Params("post")))
 }
@@ -65,15 +66,15 @@ func RevealPosterHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 func EditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	comment, err := models.GetComment(ctx.Params("id"))
 	if err != nil {
-		panic(err)
+		f.Error("Comment no longer exists.")
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
 	}
 
 	ctx.Data["Comment"] = comment
 
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
+	u, _ := models.GetUser(sess.Get("user").(string))
 	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this comment.")
 		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -90,13 +91,13 @@ func EditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f
 func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
 	comment, err := models.GetComment(ctx.Params("id"))
 	if err != nil {
-		panic(err)
+		f.Error("Comment no longer exists.")
+		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
+			ctx.Params("post")))
+		return
 	}
 
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
+	u, _ := models.GetUser(sess.Get("user").(string))
 	if !(comment.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this comment.")
 		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -127,19 +128,14 @@ func PostEditCommentHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Stor
 
 // EditPostHandler response for a post page.
 func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
+	// We do not need to check as it is handled by middleware.
 	course, _ := models.GetCourse(ctx.Params("course"))
-	post, err := models.GetPost(ctx.Params("post"))
-	if err != nil {
-		panic(err)
-	}
+	post, _ := models.GetPost(ctx.Params("post"))
 
 	ctx.Data["Course"] = course
 	ctx.Data["Post"] = post
 
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
+	u, _ := models.GetUser(sess.Get("user").(string))
 	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this post.")
 		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -160,15 +156,9 @@ func EditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 
 // PostEditPostHandler post response for editing a post.
 func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *session.Flash) {
-	post, err := models.GetPost(ctx.Params("post"))
-	if err != nil {
-		panic(err)
-	}
+	post, _ := models.GetPost(ctx.Params("post"))
 
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
+	u, _ := models.GetUser(sess.Get("user").(string))
 	if !(post.PosterID == sess.Get("user").(string) || u.IsAdmin) {
 		f.Error("You may not edit this post.")
 		ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -196,7 +186,7 @@ func PostEditPostHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, 
 		return
 	}
 
-	err = models.UpdatePost(&models.Post{
+	err := models.UpdatePost(&models.Post{
 		PostID: post.PostID,
 		Title:  title,
 		Text:   text,
@@ -248,10 +238,7 @@ func PostPageHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *s
 	}
 
 	if sess.Get("auth") == LoggedIn {
-		u, err := models.GetUser(sess.Get("user").(string))
-		if err != nil {
-			panic(err)
-		}
+		u, _ := models.GetUser(sess.Get("user").(string))
 		if common.ContainsInt64(u.Upvoted, post.PostID) {
 			ctx.Data["Upvoted"] = 1
 		}
@@ -386,13 +373,9 @@ func getMarkdownLength(s string) int {
 func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	postID, _ := strconv.ParseInt(ctx.Params("post"), 10, 64)
 
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
-
+	u, _ := models.GetUser(sess.Get("user").(string))
 	if common.ContainsInt64(u.Upvoted, postID) {
-		err = models.UnvotePost(sess.Get("user").(string), postID)
+		err := models.UnvotePost(sess.Get("user").(string), postID)
 		if err != nil {
 			f.Error(fmt.Sprintf("%s.", err))
 			ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),
@@ -401,7 +384,7 @@ func UpvotePostHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		}
 		f.Info("You have unvoted the post.")
 	} else {
-		err = models.UpvotePost(sess.Get("user").(string), postID)
+		err := models.UpvotePost(sess.Get("user").(string), postID)
 		if err != nil {
 			f.Error(fmt.Sprintf("%s.", err))
 			ctx.Redirect(fmt.Sprintf("/c/%s/%s", ctx.Params("course"),

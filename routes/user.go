@@ -65,12 +65,9 @@ func PostProfileHandler(ctx *macaron.Context, sess session.Store, f *session.Fla
 
 // PostDataHandler post response for requesting data (GDPR compliance).
 func PostDataHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
-	u, err := models.GetUser(sess.Get("user").(string))
-	if err != nil {
-		panic(err)
-	}
+	u, _ := models.GetUser(sess.Get("user").(string))
 	var p []models.Post
-	p, err = models.GetAllUserPosts(sess.Get("user").(string))
+	p, err := models.GetAllUserPosts(sess.Get("user").(string))
 	if err != nil {
 		panic(err)
 	}
