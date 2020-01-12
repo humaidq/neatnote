@@ -58,10 +58,20 @@ func AddPost(p *Post) (err error) {
 	return err
 }
 
-// DeletePost deletes a post from the database.
+// DeletePost deletes a post from the database, including comments.
 func DeletePost(id string) (err error) {
-	_, err = engine.Id(id).Delete(&Post{})
-	return
+	sess := engine.NewSession()
+
+	_, err = sess.Id(id).Delete(&Post{})
+	if err != nil {
+		return err
+	}
+	_, err = sess.Where("post_id = ?", id).Delete(new(Comment))
+	if err != nil {
+		return err
+	}
+
+	return sess.Commit()
 }
 
 // GetAllUserPosts returns all of the post created by a specific user.
