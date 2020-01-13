@@ -97,6 +97,11 @@ code {
   line-height: 30px;
   font-size: 1.2em;
   margin: 25px 0;
+  max-width: 100%;
+}
+
+.post img {
+  max-width: 100%;
 }
 
 .comment h1, .comment h2 {
