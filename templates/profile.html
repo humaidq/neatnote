@@ -27,8 +27,8 @@
 			<label class="item-title">Badge</label>
 			<div class="form-item">
 				{{range $i, $b := .AvailableBadges}}<input type="radio" name="badge"
-				value="{{$b}}"{{if or (eq $.User.Badge $b) (and (eq $.User.Badge "") (eq $b "None")) }} checked="1"{{end}}> {{$b}}
-				{{end}}
+				value="{{$b}}" id="{{$b}}"{{if or (eq $.User.Badge $b) (and (eq $.User.Badge "") (eq $b "None")) }} checked="1"{{end}}>
+				<label for="{{$b}}">{{$b}}</label> {{end}}
 			</div>
 		</div>
 		</div>
