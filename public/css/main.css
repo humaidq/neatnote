@@ -361,4 +361,7 @@ label {
     border-color: #666;
     color: #efefef;
   }
+  .post img, .comment img {
+    background-color: #efefef;
+  }
 }

@@ -24,7 +24,7 @@ import (
 )
 
 // VERSION specifies the version of neatnote
-var VERSION = "0.3"
+var VERSION = "0.3.2"
 
 func main() {
 	app := &cli.App{
