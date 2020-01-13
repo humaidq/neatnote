@@ -147,6 +147,13 @@ code {
   color: #3f3f3f;
 }
 
+blockquote {
+  color: #666;
+  border-left: 4px solid #ccc;
+  padding-left: 8px;
+  margin-left: 0;
+}
+
 /* Tables */
 .post table {
   border-collapse: collapse;
@@ -343,6 +350,9 @@ label {
   }
   .btn {
     border-color: #666;
+  }
+  blockquote {
+    color: #888;
   }
   .nav-right, .meta a, .entry a {
     color: #cfcfcf;
