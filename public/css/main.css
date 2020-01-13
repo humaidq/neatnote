@@ -154,6 +154,15 @@ blockquote {
   margin-left: 0;
 }
 
+pre {
+  padding: 4px;
+}
+
+code, pre {
+  background-color: #efefef;
+  border-radius: 3px;
+}
+
 /* Tables */
 .post table {
   border-collapse: collapse;
@@ -373,5 +382,8 @@ label {
   }
   .post img, .comment img {
     background-color: #efefef;
+  }
+  code, pre {
+      background-color: #333;
   }
 }
