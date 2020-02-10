@@ -50,6 +50,10 @@ func LoginHandler(ctx *macaron.Context, x csrf.CSRF, sess session.Store, f *sess
 	ctx.HTML(200, "login")
 }
 
+func randIntRange(min, max int) int {
+	return rand.Intn(max-min) + min
+}
+
 // PostLoginHandler post response for login page.
 func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash) {
 	if sess.Get("auth") == Verification {
@@ -62,7 +66,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 		return
 	}
 	// Generate code
-	code := fmt.Sprint(rand.Intn(8999) + 1000)
+	code := fmt.Sprint(randIntRange(100000, 999999))
 	to := fmt.Sprintf("%s%s", strings.ToLower(ctx.QueryTrim("email")), settings.Config.UniEmailDomain)
 	err := checkmail.ValidateFormat(to)
 	if err != nil {
@@ -77,6 +81,7 @@ func PostLoginHandler(ctx *macaron.Context, sess session.Store, f *session.Flash
 	sess.Set("auth", Verification)
 	sess.Set("code", code)
 	sess.Set("user", to)
+	sess.Set("attempts", 0)
 	ctx.Redirect("/verify")
 }
 
@@ -113,6 +118,13 @@ func PostVerifyHandler(ctx *macaron.Context, sess session.Store, f *session.Flas
 		ctx.Redirect("/login")
 		return
 	} else if sess.Get("auth") == LoggedIn {
+		ctx.Redirect("/")
+		return
+	}
+	sess.Set("attempts", sess.Get("attempts").(int)+1)
+	if sess.Get("attempts").(int) > 3 {
+		f.Error("You reached the maximum number of attempts. Please try again later.")
+		sess.Set("auth", LoggedOut)
 		ctx.Redirect("/")
 		return
 	}
