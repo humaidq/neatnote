@@ -104,7 +104,6 @@ func start(clx *cli.Context) (err error) {
 		m.Post("/", csrf.Validate, routes.PostProfileHandler)
 		m.Post("/data.json", csrf.Validate, routes.PostDataHandler)
 	}, routes.RequireLogin)
-	m.Get("/qna", routes.QnAHandler)
 	m.Get("/guidelines", routes.GuidelinesHandler)
 
 	// Login and verification

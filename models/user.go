@@ -67,13 +67,13 @@ func HasUser(user string) (has bool) {
 
 // UpdateUser updates a user in the database.
 func UpdateUser(u *User) (err error) {
-	_, err = engine.Id(u.Username).Update(u)
+	_, err = engine.ID(u.Username).Update(u)
 	return
 }
 
 // UpdatUserCols updates a user in the database including the specified
 // columns, even if the fields are empty.
 func UpdateUserCols(u *User, cols ...string) error {
-	_, err := engine.Id(u.Username).Cols(cols...).Update(u)
+	_, err := engine.ID(u.Username).Cols(cols...).Update(u)
 	return err
 }

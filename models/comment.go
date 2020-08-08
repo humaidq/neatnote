@@ -54,7 +54,7 @@ func AddComment(c *Comment) (err error) {
 
 // UpdateComment updates a comment in the database.
 func UpdateComment(c *Comment) (err error) {
-	_, err = engine.Id(c.CommentID).Update(c)
+	_, err = engine.ID(c.CommentID).Update(c)
 	return
 }
 
@@ -73,7 +73,7 @@ func GetComment(id string) (*Comment, error) {
 
 // DeleteComment deletes a comment from the database.
 func DeleteComment(id string) (err error) {
-	_, err = engine.Id(id).Delete(&Comment{})
+	_, err = engine.ID(id).Delete(&Comment{})
 	return
 }
 

@@ -32,12 +32,6 @@ func HomepageHandler(ctx *macaron.Context, sess session.Store, f *session.Flash)
 	ctx.HTML(200, "index")
 }
 
-// QnAHandler response for the Questions and Answers page.
-func QnAHandler(ctx *macaron.Context, sess session.Store) {
-	ctx.Data["Title"] = "Q&A"
-	ctx.HTML(200, "qna")
-}
-
 // GuidelinesHandler response for the Guidelines page.
 func GuidelinesHandler(ctx *macaron.Context, sess session.Store) {
 	ctx.Data["Title"] = "Guidelines"

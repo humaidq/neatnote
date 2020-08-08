@@ -61,7 +61,7 @@ func GetPost(id string) (*Post, error) {
 
 // UpdatePost updates a post in the database.
 func UpdatePost(p *Post) (err error) {
-	_, err = engine.Id(p.PostID).Update(p)
+	_, err = engine.ID(p.PostID).Update(p)
 	return
 }
 
@@ -75,7 +75,7 @@ func AddPost(p *Post) (err error) {
 func DeletePost(id string) (err error) {
 	sess := engine.NewSession()
 
-	_, err = sess.Id(id).Delete(&Post{})
+	_, err = sess.ID(id).Delete(&Post{})
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func UnvotePost(user string, post int64) (err error) {
 		return errors.New("Post does not exist.")
 	}
 
-	_, err = sess.Id(u.Username).Cols("upvoted").Update(&User{
+	_, err = sess.ID(u.Username).Cols("upvoted").Update(&User{
 		Username: u.Username,
 		Upvoted:  common.RemoveInt64(u.Upvoted, post),
 	})
@@ -167,7 +167,7 @@ func UpvotePost(user string, post int64) (err error) {
 		return errors.New("Post does not exist.")
 	}
 
-	_, err = sess.Id(u.Username).Cols("upvoted").Update(&User{
+	_, err = sess.ID(u.Username).Cols("upvoted").Update(&User{
 		Username: u.Username,
 		Upvoted:  append(u.Upvoted, post),
 	})

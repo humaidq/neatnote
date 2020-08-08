@@ -62,9 +62,6 @@ func SetupEngine() *xorm.Engine {
 	engine.SetMapper(core.GonicMapper{}) // So ID becomes 'id' instead of 'i_d'
 	err = engine.Sync(tables...)         // Sync the schema of tables
 
-	cacher := xorm.NewLRUCacher(xorm.NewMemoryStore(), 2000)
-	engine.SetDefaultCacher(cacher)
-
 	if err != nil {
 		log.Fatal("Unable to sync schema! ", err)
 	}

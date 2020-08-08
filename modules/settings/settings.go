@@ -80,7 +80,7 @@ func newConfig() Configuration {
 		EmailPassword:   "emailpasswordhere",
 		EmailSMTPServer: "smtp.migadu.com:587",
 		DBConfig: DatabaseConfiguration{
-			Type:     MySQL,
+			Type:     SQLite,
 			Host:     "localhost:3306",
 			Name:     "notes",
 			User:     "notes",
