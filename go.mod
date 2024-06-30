@@ -17,9 +17,8 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/unknwon/com v1.0.1 // indirect
 	github.com/urfave/cli/v2 v2.2.0
-	github.com/yuin/goldmark v1.2.1
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
+	github.com/yuin/goldmark v1.4.13
+	golang.org/x/crypto v0.17.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/macaron.v1 v1.3.9
 	xorm.io/core v0.7.3
