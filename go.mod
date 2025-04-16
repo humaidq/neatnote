@@ -18,7 +18,7 @@ require (
 	github.com/unknwon/com v1.0.1 // indirect
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/yuin/goldmark v1.4.13
-	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/macaron.v1 v1.3.9
 	xorm.io/core v0.7.3
